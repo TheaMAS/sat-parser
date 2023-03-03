@@ -1,0 +1,7 @@
+DEFINE ANALYSIS  "{target} {axis}-Coordinate"
+  VARIABLE POSITION_{axis}  "{reference}" "{target}" "{origin}"
+  BOUNDS {lower} {upper}
+  COLOR Red
+  MARKER  "*"
+  LINK OFF
+  CUE OFF

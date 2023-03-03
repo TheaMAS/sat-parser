@@ -1,0 +1,9 @@
+DEFINE PLATFORM ECR_FIXED "{object_name}"
+	STATE {latitude} {longitude} {altitude}
+  PLAT  "Earth"
+  SHAPE STATION
+  COLOR Magenta
+  ICON ON
+  LABEL ON
+  SUBPOINT OFF
+  ABOVE_TERR OFF

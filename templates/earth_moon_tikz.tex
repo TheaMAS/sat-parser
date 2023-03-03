@@ -1,0 +1,25 @@
+\begin{center}
+\tdplotsetmaincoords{{theta}}{{phi}}
+\begin{tikzpicture}
+	[scale=0.25,
+		tdplot_main_coords,
+		curve/.style={gray,densely dotted,thick}]
+
+{positions_tex}
+{points_tex}
+{edges_tex}
+
+\begin{scope}[opacity=0.25]
+\tdplotsphericalsurfaceplot{36}{12}%
+    {1}{gray}{white}%
+    {}{}{}
+\end{scope}
+
+\begin{scope}[shift=(Moon), opacity=0.25]
+	\tdplotsphericalsurfaceplot{36}{12}%
+		{.27}{gray}{white}%
+		{}{}{}
+\end{scope}
+
+\end{tikzpicture}
+\end{center}

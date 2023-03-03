@@ -1,0 +1,11 @@
+DEFINE PLATFORM NORAD "{object_name}"
+	STATE {norad_cat_id} {epoch_year} {epoch_fraction} {mean_motion_dot} {mean_motion_ddot} {bstar} {ephemeris_type} {element_set_no} {inclination} {ra_of_asc_node} {eccentricity} {arg_of_pericenter} {mean_anomaly} {mean_motion} {rev_at_epoch}
+  SHAPE VIEW_ONLY
+    COLOR Magenta
+  ICON OFF
+  ERROR_ELLIPSOID OFF
+  LABEL OFF
+  GROUND_TRACE OFF
+  SUBPOINT OFF
+  ORBIT OFF
+  DEADB4EPOCH OFF

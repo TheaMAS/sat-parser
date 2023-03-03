@@ -1,0 +1,8 @@
+DEFINE ANALYSIS  "{label} {a} - {b}"
+  VARIABLE {variable}  "{a}" "{b}"
+  BOUNDS {lower} {upper}
+	COLOR Red
+  MARKER  "*"
+  LINK OFF
+  CUE OFF
+  PLOT_ANALYSIS  "{a}-{b}"
