@@ -5,6 +5,8 @@ import interval_distance_functions as idf
 import matplotlib.pyplot as plt
 import contact_analysis as ca
 import random
+from matrix import IntervalMatrix
+
 
 
 def get_max_interval_endpoint(input_interval):
@@ -17,9 +19,10 @@ def get_max_interval_endpoint(input_interval):
     return ret
 
 def get_max_matrix_endpoint(input_matrix):
+    #Updated for new class
     #If both are same length, then we generate a resulting matrix.
     ret = 0
-    for x in input_matrix:
+    for x in input_matrix.matrix:
         for y in x:
             ret = max(ret, get_max_interval_endpoint(y))
     return ret
@@ -133,47 +136,14 @@ def make_interval_periodic_intersection(input_interval, periodicity, image_max):
 
     return ret
 
-def make_interval_periodic_intersection_2(input_interval, periodicity):
-    dat = P.to_data(input_interval)
-    ret = P.from_data([(False,-P.inf,P.inf,False)])
-    for k in range(len(dat)):
-        # Each interval is going to be one of three cases: 
-        # Case 1: given (a, b), b-a >= periodicity. This implies that this interval actually covers the whole period
-        if dat[k][2] - dat[k][1] >= periodicity:
-            #Endpoints are True because our interval is really closed
-            ret0 = True
-            ret1 = 0
-            ret2 = periodicity
-            ret3 = False
-            ret = ret.intersection(P.from_data([(ret0, ret1, ret2, ret3)]))
-        else:
-            max_mult = (dat[k][1] - (dat[k][1] % periodicity))/periodicity
-            if dat[k][2] <= (max_mult + 1)*periodicity:
-                # Case 2: k*period <= a < b <= (k+1)*period. This implies that the interval is simply contained in a single period, and you can easily modulate both endpoints
-                ret0 = dat[k][0]
-                ret1 = dat[k][1]%periodicity
-                ret2 = dat[k][2]%periodicity
-                if ret2 == 0:
-                    ret2 = periodicity
-                ret3 = dat[k][3]
-                new_tuple = [(ret0, ret1, ret2, ret3)]
-                new_interval = P.from_data(new_tuple)
-                ret = ret.intersection(P.from_data(new_tuple))
-            else:
-                # Case 3: k*period < a < (k+1)*period <= b. This implies that the interval stretches over two periods. This one is a bit tricky
-                #We break it up into two intervals and add them both
-                ret = ret.intersection(P.from_data([(True,0, dat[k][2]%periodicity, dat[k][3])]))
-                ret = ret.intersection(P.from_data([(dat[k][0], dat[k][1]%periodicity, periodicity, True)]))
-    return ret
-
 def make_matrix_periodic(input_matrix, periodicity):
-    v = len(input_matrix)
-    w = len(input_matrix[0])
+    v = len(input_matrix.n)
+    w = len(input_matrix.m)
     result = [[P.empty() for i in range(v) ] for j in range(w)]
     for x in range(v):
         for y in range(w):
             result[x][y] = make_interval_periodic_union(input_matrix[x][y], periodicity)
-    return result
+    return IntervalMatrix(v, w, result)
 
 def make_periodic_extension_of_interval(input_interval, periodicity, to_time):
     ret = input_interval
@@ -225,49 +195,6 @@ def unit_test_make_interval_periodic():
 def generate_boolean_support(number_of_intervals, left, right):
     return 0
 
-def unit_test_intersection():
-
-    # Create a collection of intervals that we can play with
-    various_intervals = []
-    #various_intervals.append(P.open(0, 25) | P.open(25, 50))
-
-    #for k in range(1,20):
-    #    various_intervals.append(P.open(0, 25) | P.open(50+k*20, 75+k*20))
-
-
-    for k in range(1, 20):
-        intervals = []
-        for j in range(1,3):
-            numbers = []
-            numbers.append((int)(random.random()*100))
-            numbers.append((int)(random.random()*100))
-            intervals.append(P.open(min(numbers), max(numbers)))
-        to_append = P.empty()
-        for j in range(0, 2):
-            to_append = to_append.union(intervals[j])
-        various_intervals.append(to_append)
-
-    #For each interval, run over a range of different periods and make the periodic extension associated with that period window
-    for interval in various_intervals:
-        #print(interval)
-        optimal_interval = interval
-        optimal_period = 0
-        optimal_length = 0
-        for period in range(1, (int)(get_max_interval_endpoint(interval)/2)):
-            #Create the periodic extension and get its length
-            the_intersection_to_print = make_interval_periodic_intersection(interval, period, get_max_interval_endpoint(interval))
-
-            #print(the_intersection_to_print)
-            new_length = get_interval_length(the_intersection_to_print)
-
-            #Replace old stuff?
-            if optimal_length <= new_length:
-                optimal_interval = the_intersection_to_print
-                optimal_length = new_length
-                optimal_period = period
-
-        print("Given f: L -> Bool, Im(f) = {}, our optimal period-window is {}. This window is generated with period {}, and has length {}.".format(interval, optimal_interval, optimal_period, optimal_length))
-        print("The periodic extension of this optimal period-window is {}".format(make_periodic_extension_of_interval(optimal_interval, optimal_period, get_max_interval_endpoint(interval))))
 
 def find_period_of_best_fit(interval, minimum, maximum):
     temp_int = interval

@@ -23,7 +23,7 @@ import networkx as nx
 import numpy as np
 from matrix import IntervalMatrix
 # from skimage import metrics
-
+import warnings
 
 # matrix multiplication function
 
@@ -78,11 +78,11 @@ def remove_diagonal(A):
         temp[i][i] = P.open(P.inf,-P.inf)
     return temp
 
-#Deprecated -- Use the matrix class static function
+#soapConverter Deprecated -- Use soap_converter in file_parser.py
 #soapConverter function originally created by Robert Cardona and Brittany Story
 #edited to convert to matrix TVG data
 def soapConverter(contactsheet):
-
+    warnings.warn("Warning: imac0.soapConverter deprecated. Use file_parser.soap_converter", DeprecationWarning)
     contact_plan = ca.contact_analysis_parser(contactsheet)
     graph = ca.construct_graph(contact_plan)
     nodes = graph["nodes"]
@@ -122,6 +122,8 @@ def soapConverter(contactsheet):
 
 # Deprecated, use in class
 def matrix_k_walk(A, k):
+    warnings.warn("Warning: imac0.matrix_k_walk deprecated. Use class IntervalMatrix multiplication instead.", DeprecationWarning)
+
     temp = A
     for x in range(k-1):
         temp = interval_matrix_mult(temp,A)
@@ -129,20 +131,26 @@ def matrix_k_walk(A, k):
 
 #   Deprecated, use in class
 def matrix_nontrivial_k_walk(A, k):
+    warnings.warn("Warning: imac0.matrix_nontrivial_k_walk deprecated. Use class IntervalMatrix multiplication instead.", DeprecationWarning)
+
     temp = remove_diagonal(A)
     return matrix_k_walk(temp,k)
 
 #   Deprecated
 def nontrivial_A_star_r(A, r):
+    warnings.warn("Warning: imac0.nontrivial_A_star_r deprecated.", DeprecationWarning)
     return A_star_r(remove_diagonal(A), r)
 
 #   Deprecated; use in class
 def nontrivial_A_star(A):
+    warnings.warn("Warning: imac0.nontrivial_A_star deprecated.", DeprecationWarning)
     return A_star(remove_diagonal(A))
 
 ## Deprecated; use in class
 #Compute A* to a specific refinement r
 def A_star_r(A, r):
+    warnings.warn("Warning: imac0.A_star_r deprecated.", DeprecationWarning)
+
     temp = A
     curr_walk = A
     for x in range(2, r+1):
@@ -153,6 +161,7 @@ def A_star_r(A, r):
 
 ## Deprecated; use in class
 def A_star(A):
+    warnings.warn("Warning: imac0.A_star deprecated.", DeprecationWarning)
     k = 1
     temp = A
     prev = []
@@ -163,7 +172,6 @@ def A_star(A):
         prev = temp
         temp = interval_matrix_sum(temp,curr_walk)
     return temp
-
 
 ##Unnecessary: This is get element on A^n
 #Returns the intervals of possible k-walks from i to j
@@ -212,7 +220,6 @@ def connection_barcode(M,i,j,n):
     plt.axis([0, int_max, -.5, n])
     plt.show()
 
-
 #Using a matrix as a linear transformation on a vector
 def transformation(A, v):
     #Linear Transformation
@@ -243,7 +250,6 @@ def create_tI(dim, t):
     return IntervalMatrix(dim, dim, ret) 
 
     #Use this to refactor remove_diagonal, and for snapshot
-
 
 #Graphics function -- can rewrite if we need it
 def connection_barcode_3d_at_slice(A, t):
