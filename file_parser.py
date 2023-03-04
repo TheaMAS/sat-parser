@@ -3,8 +3,18 @@ import portion as P
 
 from matrix import IntervalMatrix
 
-#soapConverter function originally created by Robert Cardona and Brittany Story
-#edited to convert to matrix TVG data; IntervalMatrix 
+# file_parser.py
+# Contains functions which handle data from files
+
+
+
+
+# soap_converter
+# Original authors: Robert Cardona and Brittany Story
+# Additional contributors: Brian Heller
+# @contactsheet: path to file
+# @return: IntervalMatrix
+
 def soap_converter(contactsheet):
     contact_plan = ca.contact_analysis_parser(contactsheet)
     graph = ca.construct_graph(contact_plan)

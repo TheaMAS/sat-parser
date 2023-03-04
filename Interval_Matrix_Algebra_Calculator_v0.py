@@ -21,6 +21,7 @@ import pandas as pd
 import contact_analysis as ca
 import networkx as nx
 import numpy as np
+import file_parser as fp
 from matrix import IntervalMatrix
 # from skimage import metrics
 import warnings
@@ -30,6 +31,8 @@ import warnings
 
 ## Deprecated: added to matrix class
 def interval_matrix_mult(X,Y):
+    warnings.warn("Warning: imac0.interval_matrix_mult deprecated. Use class IntervalMatrix multiplication instead.", DeprecationWarning)
+
     #First check that rows are same length, else error
     if len(X)==len(Y):
         #Then check that columns are same length, else error
@@ -52,6 +55,8 @@ def interval_matrix_mult(X,Y):
 
 ## Deprecated: added to matrix class
 def interval_matrix_sum(X,Y):
+    warnings.warn("Warning: imac0.interval_matrix_sum deprecated. Use class IntervalMatrix sum instead.", DeprecationWarning)
+
     #First check that rows are same length, else error
     if len(X)==len(Y):
         #Then check that columns are same length, else error
@@ -592,13 +597,11 @@ def cb3d(M, title, path):
 if __name__ == "__main__":
 
 
-    A = IntervalMatrix.soap_converter('./outputs/moongnd-8/moongnd_0 Contact Analysis.csv')
-
-    cb3d(A, "Demo", "hm")
+    #A = fp.soap_converter('./outputs/moongnd-8/moongnd_0 Contact Analysis.csv')
+    #cb3d(A, "Demo", "hm")
     #So we don't have an empty if block for testing
     #asdf = 1
     #file = './outputs/moongnd-8/moongnd_0 Contact Analysis.csv'
-    #A = ca.contact_analysis_parser(file)
     #print(A)
     #print(matrix_k_walk(A,0))
     #connection_barcode_3d_inline()
@@ -607,7 +610,7 @@ if __name__ == "__main__":
     #B = matrix_k_walk(A,2)
     #x = 3
     #y = 6
-    #B = P.open(1,5)|P.open(7,10)|P.open(12,15)|P.open(17,20)
+    # B = P.open(1,5)|P.open(7,10)|P.open(12,15)|P.open(17,20)
     #C = P.open(3,6)|P.open(8,10)|P.open(100,140)
     #get_length(B, 0, 100)
     #get_length(P.open(-P.inf,P.inf),5, 100)
@@ -634,7 +637,9 @@ if __name__ == "__main__":
     #print(get_max_matrix_endpoint(A))
     #print(make_matrix_periodic(A))
 
-    #M = [[P.open(-P.inf,P.inf),P.open(.8,2)|P.open(10,12),P.open(0,1)|P.open(2,5)], [P.open(.8,2)|P.open(10,12),P.open(-P.inf,P.inf),P.open(.5,1)|P.open(3,4)], [P.open(0,1)|P.open(2,4),P.open(0,1)|P.open(3,4),P.open(-P.inf,P.inf)]]
+    M = [[P.open(-P.inf,P.inf),P.open(.8,2)|P.open(10,12),P.open(0,1)|P.open(2,5)], [P.open(.8,2)|P.open(10,12),P.open(-P.inf,P.inf),P.open(.5,1)|P.open(3,4)], [P.open(0,1)|P.open(2,4),P.open(0,1)|P.open(3,4),P.open(-P.inf,P.inf)]]
+    print(interval_matrix_mult(M, M))
+
     #N_2 = [[P.open(-P.inf,P.inf),P.open(.8,6)|P.open(10,12),P.open(0,1)|P.open(2,4)], [P.open(.8,2)|P.open(10,12),P.open(-P.inf,P.inf),P.open(0,1)|P.open(3,4)], [P.open(0,1)|P.open(2,4),P.open(0,1)|P.open(3,4),P.open(-P.inf,P.inf)]]
 
 
