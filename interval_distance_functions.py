@@ -1,6 +1,8 @@
 import portion as P
 import pandas as pd
 
+from matrix import IntervalMatrix
+
 def matrix_TVG_distance(M, N, d_tvg, d_component):
     #Accepts 4 arguments: two square matrices M & N,
     #a distance function d_component which gets the distance of the individual componentwise pieces
@@ -14,6 +16,11 @@ def matrix_TVG_distance(M, N, d_tvg, d_component):
         M = M.values.tolist()
     if isinstance(N, pd.DataFrame):
         N = N.values.tolist()
+
+    if isinstance(M, IntervalMatrix):
+        M = M.matrix
+    if isinstance(N, IntervalMatrix):
+        N = N.matrix
 
     if(len(M) == len(N)):
         temp = []
