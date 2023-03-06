@@ -224,6 +224,7 @@ def construct_graph(contact_plan):
         source = contact["source"]
         destination = contact["destination"]
 
+        set_prev = -1
         for entry in contact["list"]:
 
             rise = entry["rise"]
@@ -239,9 +240,15 @@ def construct_graph(contact_plan):
             if connection not in edges:
                 edges[connection] = []
 
-            edges[connection].append(rise)
+            if set_prev == rise or (rise - set_prev < 1):
+                # This shouldn't happen : soap bug
+                edges[connection].pop()
+                # print("internal : ERROR")
+            else:
+                edges[connection].append(rise)
             edges[connection].append(set)
-
+            
+            set_prev = set
             # print("we have a connection", source, destination, "born at", rise, "dies at", set)
 
     # print(nodes)
