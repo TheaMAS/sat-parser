@@ -13,11 +13,11 @@ import portion as P
 
 
 
-def save_figure(plt, ax, filename):
+def save_figure(fig, ax, filename):
     plt.savefig(str(filename))
     return 0
 
-def display_figure(plt, ax):
+def display_figure(fig, ax):
     pass
 
 def contact_graph(input_matrix):
@@ -43,7 +43,7 @@ def contact_graph(input_matrix):
                 if int_min > pt[1] and pt[1] >= 0 and pt[1] != -float('inf'):
                     int_min = pt[1]
 
-    x_vals, y_vals= [],[]
+    x_vals, y_vals= [], []
     z_tops = []
     z_bottoms = []
     for i in range(max_i):
@@ -62,5 +62,4 @@ def contact_graph(input_matrix):
     return fig, ax
 
 if __name__ == '__main__':
-    
-
+    pass
