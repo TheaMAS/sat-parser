@@ -218,6 +218,7 @@ class IntervalMatrix():
 
     def get_slice(self, window_interval):
         pass
+<<<<<<< HEAD
 =======
                     if ret == None:
                         ret = temp
@@ -249,6 +250,8 @@ class IntervalMatrix():
             return ret
 
 >>>>>>> 83b4cb4 (Added max endpoint method to matrix class)
+=======
+>>>>>>> b90d999 (Added passes to unimplemented functions)
 
     def __add__(self, im):
         if self.dim_row != im.dim_row or self.dim_col != im.dim_col:

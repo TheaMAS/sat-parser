@@ -14,6 +14,7 @@ import portion as P
 
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 def save_figure(plot_context, filename):
     fig = plot_context[0]
     ax = plot_context[1]
@@ -28,10 +29,13 @@ def display_figure(plot_context):
 
 =======
 def save_figure(plt, ax, filename):
+=======
+def save_figure(fig, ax, filename):
+>>>>>>> b90d999 (Added passes to unimplemented functions)
     plt.savefig(str(filename))
     return 0
 
-def display_figure(plt, ax):
+def display_figure(fig, ax):
     pass
 >>>>>>> 38ae1c9 (0004: Initial stage of refactoring; adding warnings)
 
@@ -69,11 +73,15 @@ def contact_graph(input_matrix):
                     int_min = pt[1]
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     x_vals, y_vals= [], []
 
 =======
     x_vals, y_vals= [],[]
 >>>>>>> 38ae1c9 (0004: Initial stage of refactoring; adding warnings)
+=======
+    x_vals, y_vals= [], []
+>>>>>>> b90d999 (Added passes to unimplemented functions)
     z_tops = []
     z_bottoms = []
     for i in range(max_i):
@@ -93,6 +101,7 @@ def contact_graph(input_matrix):
 
 if __name__ == '__main__':
 <<<<<<< HEAD
+<<<<<<< HEAD
 
     A = [[P.open(-P.inf,P.inf),P.open(.8,2)|P.open(10,12),P.open(0,1)|P.open(2,5)], [P.open(.8,2)|P.open(10,12),P.open(-P.inf,P.inf),P.open(.5,1)|P.open(3,4)], [P.open(0,1)|P.open(2,4),P.open(0,1)|P.open(3,4),P.open(-P.inf,P.inf)]]
     A = IntervalMatrix(3, 3, A)
@@ -104,3 +113,6 @@ if __name__ == '__main__':
     
 >>>>>>> 38ae1c9 (0004: Initial stage of refactoring; adding warnings)
 
+=======
+    pass
+>>>>>>> b90d999 (Added passes to unimplemented functions)
