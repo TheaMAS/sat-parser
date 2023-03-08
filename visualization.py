@@ -25,6 +25,7 @@ def display_figure(plot_context):
     plt.show()
     return plot_context
 
+
 def contact_graph(input_matrix):
     # Takes an IntervalMatrix and returns the 3d graph of the contact intervals
 
@@ -35,6 +36,7 @@ def contact_graph(input_matrix):
     full_contacts = []
     #temp = M.matrix
     full_contacts.append(input_matrix.matrix)
+
 
     int_min = 0
     int_max = 10
@@ -49,6 +51,7 @@ def contact_graph(input_matrix):
                     int_min = pt[1]
 
     x_vals, y_vals= [], []
+
     z_tops = []
     z_bottoms = []
     for i in range(max_i):
@@ -74,12 +77,6 @@ if __name__ == '__main__':
     print("Our contact graph is {}".format(x))
     #save_figure(x, "practice")
     display_figure(x)
-
-
-
-
-
-
 
 
 

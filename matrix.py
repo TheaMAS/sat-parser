@@ -143,6 +143,8 @@ class IntervalMatrix():
                             ret = min(ret, temp)
             return ret
 
+    def get_slice(self, window_interval):
+        pass
 
     def __add__(self, im):
         if self.dim_row != im.dim_row or self.dim_col != im.dim_col:
