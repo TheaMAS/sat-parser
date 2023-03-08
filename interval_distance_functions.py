@@ -51,7 +51,6 @@ def get_midpoint(A):
     #Accepts a pyportion interval 4-tuple. Returns the value of the midpoint
     return (A[2] + A[1])/2
 
-
 def close_interval(A):
     ret = P.empty()
     A = P.to_data(A)

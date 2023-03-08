@@ -78,6 +78,7 @@ def interval_matrix_sum(X,Y):
 ## deprecated: Added to class IntervalMatrix
 #This de-trivializes the matrix, so walks like a -> a don't exist
 def remove_diagonal(A):
+    warnings.warn("Warning: imac0.remove_diagonal deprecated. Use class function in IntervalMatrix instead.", DeprecationWarning)
     temp = A
     for i in range(0, len(A)):
         temp[i][i] = P.open(P.inf,-P.inf)
@@ -240,6 +241,8 @@ def transformation(A, v):
         print("Error! Matrix and vector have different dimensions")
 
 def snapshot(A, t):
+    warnings.warn("Warning: imac0.interval_matrix_sum deprecated. Use function get_slice within class IntervalMatrix instead.", DeprecationWarning)
+
     #Grabs a snapshot of A, effectively a thick slice of A x R along the t-axis
     #Grab yourself a time sandwich
     return interval_matrix_mult(A, create_tI(len(A),t))
