@@ -28,6 +28,7 @@ def display_figure(plot_context):
     plt.show()
     return plot_context
 
+<<<<<<< HEAD
 =======
 def save_figure(plt, ax, filename):
 =======
@@ -52,6 +53,8 @@ def display_figure(plot_context):
     plt.show()
     return plot_context
 >>>>>>> a2b9ac1 (0004 Continued refactoring of visualization code)
+=======
+>>>>>>> 336d66e (0004: Initial stage of refactoring; adding warnings)
 
 def contact_graph(input_matrix):
     # Takes an IntervalMatrix and returns the 3d graph of the contact intervals
@@ -84,6 +87,7 @@ def contact_graph(input_matrix):
     full_contacts.append(input_matrix.matrix)
 >>>>>>> a2b9ac1 (0004 Continued refactoring of visualization code)
 
+
     int_min = 0
     int_max = 10
 
@@ -100,12 +104,15 @@ def contact_graph(input_matrix):
 <<<<<<< HEAD
     x_vals, y_vals= [], []
 
+<<<<<<< HEAD
 =======
     x_vals, y_vals= [],[]
 >>>>>>> 38ae1c9 (0004: Initial stage of refactoring; adding warnings)
 =======
     x_vals, y_vals= [], []
 >>>>>>> b90d999 (Added passes to unimplemented functions)
+=======
+>>>>>>> 336d66e (0004: Initial stage of refactoring; adding warnings)
     z_tops = []
     z_bottoms = []
     for i in range(max_i):
@@ -149,6 +156,7 @@ if __name__ == '__main__':
 
 
 
+<<<<<<< HEAD
 
 
 
@@ -156,3 +164,5 @@ if __name__ == '__main__':
 
 
 >>>>>>> a2b9ac1 (0004 Continued refactoring of visualization code)
+=======
+>>>>>>> 336d66e (0004: Initial stage of refactoring; adding warnings)
