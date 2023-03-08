@@ -13,6 +13,7 @@ import portion as P
 
 
 
+<<<<<<< HEAD
 def save_figure(plot_context, filename):
     fig = plot_context[0]
     ax = plot_context[1]
@@ -25,10 +26,19 @@ def display_figure(plot_context):
     plt.show()
     return plot_context
 
+=======
+def save_figure(plt, ax, filename):
+    plt.savefig(str(filename))
+    return 0
+
+def display_figure(plt, ax):
+    pass
+>>>>>>> 38ae1c9 (0004: Initial stage of refactoring; adding warnings)
 
 def contact_graph(input_matrix):
     # Takes an IntervalMatrix and returns the 3d graph of the contact intervals
 
+<<<<<<< HEAD
     max_i = input_matrix.dim_row
     max_j = input_matrix.dim_col
     fig = plt.figure(figsize=(8,5))
@@ -36,6 +46,15 @@ def contact_graph(input_matrix):
     full_contacts = []
     #temp = M.matrix
     full_contacts.append(input_matrix.matrix)
+=======
+    max_i = len(M.matrix)
+    max_j = len(M.matrix[0])
+    fig = plt.figure(figsize=(8,5))
+    ax = plt.axes(projection='3d')
+    full_contacts = []
+    temp = M.matrix
+    full_contacts.append(M.matrix)
+>>>>>>> 38ae1c9 (0004: Initial stage of refactoring; adding warnings)
 
     int_min = 0
     int_max = 10
@@ -49,8 +68,12 @@ def contact_graph(input_matrix):
                 if int_min > pt[1] and pt[1] >= 0 and pt[1] != -float('inf'):
                     int_min = pt[1]
 
+<<<<<<< HEAD
     x_vals, y_vals= [], []
 
+=======
+    x_vals, y_vals= [],[]
+>>>>>>> 38ae1c9 (0004: Initial stage of refactoring; adding warnings)
     z_tops = []
     z_bottoms = []
     for i in range(max_i):
@@ -69,6 +92,7 @@ def contact_graph(input_matrix):
     return fig, ax
 
 if __name__ == '__main__':
+<<<<<<< HEAD
 
     A = [[P.open(-P.inf,P.inf),P.open(.8,2)|P.open(10,12),P.open(0,1)|P.open(2,5)], [P.open(.8,2)|P.open(10,12),P.open(-P.inf,P.inf),P.open(.5,1)|P.open(3,4)], [P.open(0,1)|P.open(2,4),P.open(0,1)|P.open(3,4),P.open(-P.inf,P.inf)]]
     A = IntervalMatrix(3, 3, A)
@@ -76,4 +100,7 @@ if __name__ == '__main__':
     print("Our contact graph is {}".format(x))
     #save_figure(x, "practice")
     display_figure(x)
+=======
+    
+>>>>>>> 38ae1c9 (0004: Initial stage of refactoring; adding warnings)
 
