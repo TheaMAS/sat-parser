@@ -58,6 +58,9 @@ class IntervalMatrix():
             temp = temp + curr_walk
         return temp
 
+    def get_slice(self, window_interval):
+        
+
     def __add__(self, im):
         if self.dim_row != im.dim_row or self.dim_col != im.dim_col:
             raise ValueError("Dimension Mismatch Error (in Addition)")
