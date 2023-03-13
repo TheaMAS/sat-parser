@@ -1,11 +1,17 @@
 import numpy as np
 from orb_parser import *
 
+import warnings
+
 def coordinates_view_parser(filename):
 	"""
 
 	coordinates[time_slice][target] = [x, y, z]
 	"""
+	warnings.warn(
+		"Warning: coordinates_parser.coordinates_view_parser deprecated. " + \
+			"Use function in reports_parser instead.", DeprecationWarning)
+
 
 	content = ""
 	with open(filename) as f:
@@ -64,6 +70,11 @@ def get_origin_body(platforms, target_name):
 	Given a list of platforms from the orb file and a target satellite name,
 		return the origin body.
 	"""
+
+	warnings.warn(
+		"Warning: coordinates_parser.get_origin_body deprecated. " + \
+			"Use function in reports_parser instead.", DeprecationWarning)
+	
 	origin = "Earth"
 	for platform in platforms:
 		if platform["object_name"] == target_name and "body" in platform:
@@ -71,6 +82,10 @@ def get_origin_body(platforms, target_name):
 	return origin
 
 if __name__ == "__main__":
+	warnings.warn(
+		"Warning: coordinates_parser deprecated." + \
+			"Use function in reports_parser instead.", DeprecationWarning)
+
 	EARTH_RADIUS = 6367 # KM
 	MOON_RADIUS = 1737 # KM
 	platforms = get_platforms("./tests/orb/moongnd_base.orb")
