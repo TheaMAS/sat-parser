@@ -446,14 +446,16 @@ if __name__ == "__main__":
     matrix = IntervalMatrix(4, 4, matrix_raw_sym)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
     print("Row: {}. Col: {}".format(matrix.dim_row, matrix.dim_col))
 =======
     #print(matrix)
     #print(matrix.get_max_endpoint())
     #print(matrix.get_min_endpoint())
+=======
+>>>>>>> a2b9ac1 (0004 Continued refactoring of visualization code)
 
-    #print(get_average_contact_matrix(matrix))
 
     for k in range(0, 10, 1):
         j = (float)(k/10)
