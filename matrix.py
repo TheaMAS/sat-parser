@@ -249,7 +249,6 @@ class IntervalMatrix():
         array = [[P.empty() for j in range(n)] for i in range(n)]
         for i in range(n):
             array[i][i] = P.open(-P.inf, P.inf)
-
         return IntervalMatrix(n, n, matrix) 
 
     @staticmethod
@@ -285,3 +284,25 @@ if __name__ == "__main__":
     # matrix = IntervalMatrix(4, 4, matrix_raw)
     matrix = IntervalMatrix(4, 4, matrix_raw_sym)
 
+
+    print("Row: {}. Col: {}".format(matrix.dim_row, matrix.dim_col))
+    #print("M")
+    #print(matrix)
+    #print("M^2")
+    #print(matrix + (matrix * matrix))
+    #print("M^3")
+    #print(matrix + (matrix * matrix) + matrix * matrix * matrix)
+    #print("A^3")
+    #print(matrix )
+    #print(matrix.is_symmetric())
+
+
+    print(matrix**1)
+
+    n = matrix.dim_row
+    m = matrix.dim_col
+
+    print("Testing Iterator")
+    M2 = matrix + (matrix * matrix)
+    for index, entry in enumerate(M2):
+        print(f"({index // m}, {index % n}) : {entry}")

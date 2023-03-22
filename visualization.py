@@ -37,7 +37,6 @@ def contact_graph(input_matrix):
     #temp = M.matrix
     full_contacts.append(input_matrix.matrix)
 
-
     int_min = 0
     int_max = 10
 
@@ -77,6 +76,4 @@ if __name__ == '__main__':
     print("Our contact graph is {}".format(x))
     #save_figure(x, "practice")
     display_figure(x)
-
-
 
