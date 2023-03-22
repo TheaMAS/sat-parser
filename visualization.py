@@ -87,7 +87,6 @@ def contact_graph(input_matrix):
     full_contacts.append(input_matrix.matrix)
 >>>>>>> a2b9ac1 (0004 Continued refactoring of visualization code)
 
-
     int_min = 0
     int_max = 10
 
@@ -153,6 +152,7 @@ if __name__ == '__main__':
 >>>>>>> b90d999 (Added passes to unimplemented functions)
 =======
 
+<<<<<<< HEAD
 
 
 
@@ -166,3 +166,5 @@ if __name__ == '__main__':
 >>>>>>> a2b9ac1 (0004 Continued refactoring of visualization code)
 =======
 >>>>>>> 336d66e (0004: Initial stage of refactoring; adding warnings)
+=======
+>>>>>>> 2e3f043 (0004 Continued refactoring of visualization code)

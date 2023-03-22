@@ -379,6 +379,7 @@ class IntervalMatrix():
         array = [[P.empty() for j in range(n)] for i in range(n)]
         for i in range(n):
             array[i][i] = P.open(-P.inf, P.inf)
+<<<<<<< HEAD
 =======
         matrix = [[P.empty() for j in range(n)] for i in range(n)]
 =======
@@ -388,6 +389,8 @@ class IntervalMatrix():
             array[i][i] = P.open(-P.inf, P.inf)
 
 >>>>>>> c4a59cb (Added static methods to `IntervalMatrix`)
+=======
+>>>>>>> 2e3f043 (0004 Continued refactoring of visualization code)
         return IntervalMatrix(n, n, matrix) 
 
     @staticmethod
@@ -484,10 +487,15 @@ if __name__ == "__main__":
     print(average_contact_filtration(matrix, .2))
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     print(get_average_contact_matrix(matrix))
 >>>>>>> cb4f5e2 (Added average contact matrix function)
 =======
 >>>>>>> 27106d4 (Current work on calculating persistence)
+=======
+
+    print("Row: {}. Col: {}".format(matrix.dim_row, matrix.dim_col))
+>>>>>>> 2e3f043 (0004 Continued refactoring of visualization code)
     #print("M")
     #print(matrix)
     #print("M^2")
@@ -500,9 +508,13 @@ if __name__ == "__main__":
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     #print(matrix**1)
 >>>>>>> b36458b (add `IntervalMatrixIterator`)
+=======
+
+>>>>>>> 2e3f043 (0004 Continued refactoring of visualization code)
 
     print(matrix**1)
 
