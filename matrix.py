@@ -235,16 +235,17 @@ if __name__ == "__main__":
     # matrix = IntervalMatrix(4, 4, matrix_raw)
     matrix = IntervalMatrix(4, 4, matrix_raw_sym)
 
-    print("M")
-    print(matrix)
-    print("M^2")
-    print(matrix + (matrix * matrix))
-    print("M^3")
-    print(matrix + (matrix * matrix) + matrix * matrix * matrix)
-    print("A^3")
-    print(matrix )
 
-    print(matrix.is_symmetric())
+    print("Row: {}. Col: {}".format(matrix.dim_row, matrix.dim_col))
+    #print("M")
+    #print(matrix)
+    #print("M^2")
+    #print(matrix + (matrix * matrix))
+    #print("M^3")
+    #print(matrix + (matrix * matrix) + matrix * matrix * matrix)
+    #print("A^3")
+    #print(matrix )
+    #print(matrix.is_symmetric())
 
 
     print(matrix**1)

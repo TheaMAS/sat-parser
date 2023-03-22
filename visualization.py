@@ -13,23 +13,28 @@ import portion as P
 
 
 
-def save_figure(fig, ax, filename):
+def save_figure(plot_context, filename):
+    fig = plot_context[0]
+    ax = plot_context[1]
     plt.savefig(str(filename))
-    return 0
+    return plot_context
 
-def display_figure(fig, ax):
-    pass
+def display_figure(plot_context):
+    fig = plot_context[0]
+    ax = plot_context[1]
+    plt.show()
+    return plot_context
 
 def contact_graph(input_matrix):
     # Takes an IntervalMatrix and returns the 3d graph of the contact intervals
 
-    max_i = len(M.matrix)
-    max_j = len(M.matrix[0])
+    max_i = input_matrix.dim_row
+    max_j = input_matrix.dim_col
     fig = plt.figure(figsize=(8,5))
     ax = plt.axes(projection='3d')
     full_contacts = []
-    temp = M.matrix
-    full_contacts.append(M.matrix)
+    #temp = M.matrix
+    full_contacts.append(input_matrix.matrix)
 
     int_min = 0
     int_max = 10
@@ -62,4 +67,20 @@ def contact_graph(input_matrix):
     return fig, ax
 
 if __name__ == '__main__':
-    pass
+
+    A = [[P.open(-P.inf,P.inf),P.open(.8,2)|P.open(10,12),P.open(0,1)|P.open(2,5)], [P.open(.8,2)|P.open(10,12),P.open(-P.inf,P.inf),P.open(.5,1)|P.open(3,4)], [P.open(0,1)|P.open(2,4),P.open(0,1)|P.open(3,4),P.open(-P.inf,P.inf)]]
+    A = IntervalMatrix(3, 3, A)
+    x = contact_graph(A)
+    print("Our contact graph is {}".format(x))
+    #save_figure(x, "practice")
+    display_figure(x)
+
+
+
+
+
+
+
+
+
+
