@@ -240,6 +240,10 @@ def get_satellite_names(graph):
 
 	return satellite_names
 
+if __name__ == "__main__":
+
+	graph = construct_graph(contact_plan)
+
 def extract_critical_times(graph):
 	"""
 	This function takes a "graph" object as given by `construct_graph`
