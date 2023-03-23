@@ -10,7 +10,6 @@ from matrix import IntervalMatrix
 
 
 def get_max_interval_endpoint(input_interval):
-    print(input_interval)
     ret = 0
     for interval in input_interval:
         dat = P.to_data(interval)[0][2]
@@ -167,31 +166,6 @@ def make_periodic_expansion_of_matrix(input_matrix, periodicity, to_time):
             result[x][y] = make_periodic_extension_of_interval(input_matrix[x][y], periodicity, to_time)
     return result
 
-
-def unit_test_make_interval_periodic():
-    various_intervals = []
-    various_intervals.append(P.open(0, 25) | P.open(50, 75))
-    for k in range(1,10):
-        various_intervals.append(P.open(0, 25) | P.open(50+k*20, 75+k*20))
-
-    for interval in various_intervals:
-        periods = []
-        distances = []
-        max_endpoint = get_max_interval_endpoint(interval)
-        for period in range(10, max_endpoint, 1):
-            periods.append(period)
-            periodic_interval = make_interval_periodic_union(interval, period)
-            periodic_expansion = make_periodic_extension_of_interval(periodic_interval, period, max_endpoint)
-            distances.append(idf.xor_distance(interval,periodic_expansion))
-        plt.bar(periods,distances)
-        plt.title("L_1 Distance on the interval {}".format(interval))
-        plt.xlabel("Induced Period")
-        plt.ylabel("Distance from Original Interval")
-        #plt.savefig("imgout/{}.png".format(interval, period), format="png")
-        #plt.close()
-        plt.show()
-
-
 def generate_boolean_support(number_of_intervals, left, right):
     return 0
 
@@ -217,6 +191,14 @@ def get_interval_length(A):
             ret += c[2]-c[1]
     return ret
 
+def get_periodic_extensions_over_range(I, p_min, p_max, interval_max, p_increment):
+    full_range = np.linspace(p_min, p_max, (int)((p_max-p_min)/p_increment))
+    ret = []
+    #print(full_range)
+    for q in full_range:
+        p = q/p_increment
+        ret.append(make_periodic_extension_of_interval(make_interval_periodic_intersection(I, p*p_increment, get_max_interval_endpoint(I)), p*p_increment, interval_max))
+    return ret
 
 def graph_periodic_intersection_over_various_periods(I, p_min, p_max, interval_max, p_increment, display_noise=False):
 
@@ -290,6 +272,51 @@ def graph_periodic_intersection_over_various_periods(I, p_min, p_max, interval_m
 
     return 0
 
+def square_wave(frequency, time):
+    #frequency gives the periodicity over (0,1)
+    #time is the stopping point of the interval
+    # Takes a frequency and builds a collection of intervals that represents a square wave out to a specified time
+    ret = P.empty()
+
+    for i in range(0, (int)(time*frequency)):
+        ret = ret.union(right_shift(window((float)(1/(frequency*2)), 0), (float)(i/frequency)))
+    return ret
+
+def random_one_dimensional_data_cloud(number_of_points, maxval, sigdigs=0):
+    ret = P.empty()
+    for i in range(0, number_of_points):
+        val = (float)(random.random()*maxval)
+        if sigdigs != 0:
+            val = round(val, sigdigs)
+        ret = ret.union(P.singleton(val))
+    #print(ret)
+    return ret
+
+
+
+
+def unit_test_make_interval_periodic():
+    various_intervals = []
+    various_intervals.append(P.open(0, 25) | P.open(50, 75))
+    for k in range(1,10):
+        various_intervals.append(P.open(0, 25) | P.open(50+k*20, 75+k*20))
+
+    for interval in various_intervals:
+        periods = []
+        distances = []
+        max_endpoint = get_max_interval_endpoint(interval)
+        for period in range(10, max_endpoint, 1):
+            periods.append(period)
+            periodic_interval = make_interval_periodic_union(interval, period)
+            periodic_expansion = make_periodic_extension_of_interval(periodic_interval, period, max_endpoint)
+            distances.append(idf.xor_distance(interval,periodic_expansion))
+        plt.bar(periods,distances)
+        plt.title("L_1 Distance on the interval {}".format(interval))
+        plt.xlabel("Induced Period")
+        plt.ylabel("Distance from Original Interval")
+        #plt.savefig("imgout/{}.png".format(interval, period), format="png")
+        #plt.close()
+        plt.show()
 
 def unit_test_make_matrix_periodic():
     file = './outputs/moongnd-8/moongnd_0 Contact Analysis.csv'
@@ -349,26 +376,6 @@ def old_comments():
 
     return 0
 
-def square_wave(frequency, time):
-    #frequency gives the periodicity over (0,1)
-    #time is the stopping point of the interval
-    # Takes a frequency and builds a collection of intervals that represents a square wave out to a specified time
-    ret = P.empty()
-
-    for i in range(0, (int)(time*frequency)):
-        ret = ret.union(right_shift(window((float)(1/(frequency*2)), 0), (float)(i/frequency)))
-    return ret
-
-def random_one_dimensional_data_cloud(number_of_points, maxval, sigdigs=0):
-    ret = P.empty()
-    for i in range(0, number_of_points):
-        val = (float)(random.random()*maxval)
-        if sigdigs != 0:
-            val = round(val, sigdigs)
-        ret = ret.union(P.singleton(val))
-    #print(ret)
-    return ret
-
 if __name__ == "__main__":
     N = [[P.open(-P.inf,P.inf),P.open(.8,2)|P.open(13.5,14.5),P.open(0,1)|P.open(2,4)], [P.open(.8,2)|P.open(10,12),P.open(-P.inf,P.inf),P.open(0,1)|P.open(3,4)], [P.open(0,1)|P.open(2,4),P.open(0,1)|P.open(3,4),P.open(-P.inf,P.inf)]]
     A = N
@@ -388,18 +395,17 @@ if __name__ == "__main__":
     #def graph_periodic_intersection_over_various_periods(I, p_min, p_max, max, p_increment):
     # This produces a nice graph that shows the connected components of this graph nicely
 
-    #I = P.open(3,5)|P.open(7,9)|P.open(10,12)|P.open(6, 6.5)|P.open(1,2)
+    I = P.open(3,5)|P.open(7,9)|P.open(10,12)|P.open(6, 6.5)|P.open(1,2)
+    print(get_periodic_extensions_over_range(I, 1, 20, 20, 2))
     #graph_periodic_intersection_over_various_periods(I, 1, 20, 20, .05)
 
 
-    I = random_one_dimensional_data_cloud(50, 10, 2)
-    J = open_cover(I, .01)
+    #I = random_one_dimensional_data_cloud(50, 10, 2)
+    #J = open_cover(I, .01)
 
-    for i in range(1, 10):
-        J = open_cover(J, .01)
-        graph_periodic_intersection_over_various_periods(J, .1, 10, 10, .05, display_noise = True)
-
-
+    #for i in range(1, 10):
+    #    J = open_cover(J, .01)
+    #    graph_periodic_intersection_over_various_periods(J, .1, 10, 10, .05, display_noise = True)
     
     #graph_periodic_intersection_over_various_periods(I, .1, 10, 10, .05, display_noise = True)
     #graph_periodic_intersection_over_various_periods(J, .1, 10, 10, .05, display_noise = True)
