@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import contact_analysis as ca
 import random
 from matrix import IntervalMatrix
+import itertools
 
 
 
@@ -294,7 +295,6 @@ def random_one_dimensional_data_cloud(number_of_points, maxval, sigdigs=0):
 
 
 
-
 def unit_test_make_interval_periodic():
     various_intervals = []
     various_intervals.append(P.open(0, 25) | P.open(50, 75))
@@ -395,8 +395,30 @@ if __name__ == "__main__":
     #def graph_periodic_intersection_over_various_periods(I, p_min, p_max, max, p_increment):
     # This produces a nice graph that shows the connected components of this graph nicely
 
+
     I = P.open(3,5)|P.open(7,9)|P.open(10,12)|P.open(6, 6.5)|P.open(1,2)
-    print(get_periodic_extensions_over_range(I, 1, 20, 20, 2))
+    collection = get_periodic_extensions_over_range(I, 1, 6, 12, .5)
+    #print(collection)
+    candidate = P.empty()
+    candidate_list = []
+    candidate_distance = idf.xor_distance(I, candidate)
+
+    for size_of_combination in range(len(collection) + 1):
+        for subset in itertools.combinations(collection, size_of_combination):
+            union_of_subset = P.empty()
+            for k in subset:
+                union_of_subset = union_of_subset.union(k)
+            new_distance = idf.xor_distance(union_of_subset, I)
+            #print("{} has distance {}".format(subset, new_distance))
+            if new_distance < candidate_distance:
+                candidate_list = subset
+                candidate = union_of_subset
+                candidate_distance = new_distance
+            # If xor distance is lower than previous, make this subset the new collection the periodic span of the interval
+
+    print("{} has a distance from the original interval of {}".format(candidate_list, candidate_distance))
+
+
     #graph_periodic_intersection_over_various_periods(I, 1, 20, 20, .05)
 
 
