@@ -52,4 +52,8 @@ Now that you have a *.csv* file that you want to play (read: work) with, you'll 
 This script imports a formatted csv file and turns it into a matrix of intervals, and then performs a number of operations and calculations on the matrix. See the documentation on available functions for more information on what calculations can be performed.
 
 
+## Conda Environment
 
+Run `conda env create --file environment.yml` and `conda activate sat-parser` to manage dependencies.
+
+You need `cmake` and `boost` installed for `dionysus` to install properly.
