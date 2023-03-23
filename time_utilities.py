@@ -77,5 +77,5 @@ def get_random_date():
 	total = end_date - start_date
 	random_day = random.randrange(total.days)
 	random_date = start_date + timedelta(days=random_day)	
-	
-	return random_date.year, random_date.month, random_date.day
+	return random_date
+	# return random_date.year, random_date.month, random_date.day
