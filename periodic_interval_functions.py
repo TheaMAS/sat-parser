@@ -273,6 +273,15 @@ def graph_periodic_intersection_over_various_periods(I, p_min, p_max, interval_m
 
     return 0
 
+def graph_extensions_with_distinguished_extensions(I, extensions, distinguished_extensions, p_min, p_max, interval_max, p_increment, display_noise=False):
+    fig = plt.figure()
+    ax1 = fig.add_subplot(2, 1, 1)
+    ax1.set_title("periodic extension with distinguished extensions")
+    plt.ylabel("Period")
+    plt.xlabel("Support")
+
+    return 0
+
 def square_wave(frequency, time):
     #frequency gives the periodicity over (0,1)
     #time is the stopping point of the interval
@@ -416,8 +425,18 @@ if __name__ == "__main__":
                 candidate_distance = new_distance
             # If xor distance is lower than previous, make this subset the new collection the periodic span of the interval
 
+    fig = plt.figure()
+    ax1 = fig.add_subplot(1, 1, 1)
+    ax1.set_title("The periodic support")
+    ax2.set_title("The periodic extensions")
+    plt.ylabel("Period")
+    plt.xlabel("Support")
+    for k in collection:
+
+
     print("{} has a distance from the original interval of {}".format(candidate_list, candidate_distance))
 
+    #graph_periodic_intersection_with_distinguished_extensions
 
     #graph_periodic_intersection_over_various_periods(I, 1, 20, 20, .05)
 
