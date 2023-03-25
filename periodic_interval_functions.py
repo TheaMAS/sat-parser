@@ -7,7 +7,7 @@ import contact_analysis as ca
 import random
 from matrix import IntervalMatrix
 import itertools
-
+import file_parser
 
 
 def get_max_interval_endpoint(input_interval):
@@ -87,6 +87,8 @@ def open_cover(I, epsilon):
     #return I.apply(lambda x: (False , x.lower - epsilon, x.upper + epsilon, False))
 
 def left_shift(interval, t):
+    if interval == P.empty():
+        return P.empty()
     return interval.apply(lambda x: (x.left, x.lower - t, x.upper - t, x.right))
 
 def right_shift(interval, t):
@@ -147,15 +149,15 @@ def make_matrix_periodic(input_matrix, periodicity):
 
 def make_periodic_extension_of_interval(input_interval, periodicity, to_time):
     ret = input_interval
+    if(ret != P.empty()):
+        if to_time != float('inf'):
+            range_max = int(to_time/periodicity) + 1
+        else:
+            return P.open(-P.inf,P.inf)
 
-    if to_time != float('inf'):
-        range_max = int(to_time/periodicity) + 1
-    else:
-        return P.open(-P.inf,P.inf)
-
-    for k in range(1, range_max):
-        to_union = input_interval.apply(lambda x: (x.left, x.lower+k*periodicity, x.upper+k*periodicity, x.right)).intersection(P.closed(0,to_time))
-        ret = ret.union(to_union)
+        for k in range(1, range_max):
+            to_union = input_interval.apply(lambda x: (x.left, x.lower+k*periodicity, x.upper+k*periodicity, x.right)).intersection(P.closed(0,to_time))
+            ret = ret.union(to_union)
     return ret
 
 def make_periodic_expansion_of_matrix(input_matrix, periodicity, to_time):
@@ -223,7 +225,6 @@ def graph_periodic_intersection_over_various_periods(I, p_min, p_max, interval_m
     plt.xlabel("Support")
     #plt.xticks(range(0, interval_max+1))
     #plt.yticks(range(p_min, p_max+1))
-
 
     full_range = np.linspace(p_min, p_max, (int)((p_max-p_min)/p_increment))
 
@@ -302,8 +303,6 @@ def random_one_dimensional_data_cloud(number_of_points, maxval, sigdigs=0):
     #print(ret)
     return ret
 
-
-
 def unit_test_make_interval_periodic():
     various_intervals = []
     various_intervals.append(P.open(0, 25) | P.open(50, 75))
@@ -358,6 +357,31 @@ def unit_test_make_matrix_periodic():
     plt.ylabel("Distance from Original Matrix")
     plt.show()
 
+def workbench_optimal_periodic_extensions(I, p_min, p_max, interval_max, p_increment):
+    collection = get_periodic_extensions_over_range(I, p_min, p_max, interval_max, p_increment)
+    #print(collection)
+    candidate = P.empty()
+    candidate_list = []
+    candidate_distance = idf.xor_distance(I, candidate)
+
+    for size_of_combination in range(2, len(collection) + 1):
+        for subset in itertools.combinations(range(len(collection)), size_of_combination):
+            union_of_subset = P.empty()
+            for k in subset:
+                union_of_subset = union_of_subset.union(collection[k])
+            new_distance = idf.xor_distance(union_of_subset, I)
+
+            if new_distance < candidate_distance:
+                candidate_list = subset
+                candidate = union_of_subset
+                candidate_distance = new_distance
+            # If xor distance is lower than previous, make this subset the new collection the periodic span of the interval
+    print("Contact interval {}".format(I))
+    for k in candidate_list:
+        print("Period {} gives support: {}".format(p_min + k*p_increment, collection[k].intersection(P.open(0, p_min + p_increment*k))))
+    print("{} has a distance from the original interval of {}".format(candidate_list, candidate_distance))
+
+
 def old_comments():
     #print(A[0][1])
     #print(make_interval_periodic_union(A[0][1], 2))
@@ -382,59 +406,6 @@ def old_comments():
     #    B = make_matrix_periodic(A, k)
     #    C = make_periodic_expansion_of_matrix(B, k, 14.5)
     #    print("C = " + str(C))
-
-    return 0
-
-if __name__ == "__main__":
-    N = [[P.open(-P.inf,P.inf),P.open(.8,2)|P.open(13.5,14.5),P.open(0,1)|P.open(2,4)], [P.open(.8,2)|P.open(10,12),P.open(-P.inf,P.inf),P.open(0,1)|P.open(3,4)], [P.open(0,1)|P.open(2,4),P.open(0,1)|P.open(3,4),P.open(-P.inf,P.inf)]]
-    A = N
-
-    #unit_test_window()
-
-
-    #X = P.open(3,5) | P.open(7,9)
-    #print(len(X))
-
-
-    #This function generates a bunch of random intervals for you to solve if you want to verify the correctness of the algorithm.
-    #It produces a bunch of random, simple problems
-    #unit_test_intersection()
-
-
-    #def graph_periodic_intersection_over_various_periods(I, p_min, p_max, max, p_increment):
-    # This produces a nice graph that shows the connected components of this graph nicely
-
-
-    I = P.open(3,5)|P.open(7,9)|P.open(10,12)|P.open(6, 6.5)|P.open(1,2)
-    collection = get_periodic_extensions_over_range(I, 1, 6, 12, .5)
-    #print(collection)
-    candidate = P.empty()
-    candidate_list = []
-    candidate_distance = idf.xor_distance(I, candidate)
-
-    for size_of_combination in range(len(collection) + 1):
-        for subset in itertools.combinations(collection, size_of_combination):
-            union_of_subset = P.empty()
-            for k in subset:
-                union_of_subset = union_of_subset.union(k)
-            new_distance = idf.xor_distance(union_of_subset, I)
-            #print("{} has distance {}".format(subset, new_distance))
-            if new_distance < candidate_distance:
-                candidate_list = subset
-                candidate = union_of_subset
-                candidate_distance = new_distance
-            # If xor distance is lower than previous, make this subset the new collection the periodic span of the interval
-
-    fig = plt.figure()
-    ax1 = fig.add_subplot(1, 1, 1)
-    ax1.set_title("The periodic support")
-    ax2.set_title("The periodic extensions")
-    plt.ylabel("Period")
-    plt.xlabel("Support")
-    for k in collection:
-
-
-    print("{} has a distance from the original interval of {}".format(candidate_list, candidate_distance))
 
     #graph_periodic_intersection_with_distinguished_extensions
 
@@ -473,6 +444,26 @@ if __name__ == "__main__":
     #A = imac.soapConverter(file)
     #print(A[3][5])
     #graph_periodic_intersection_over_various_periods(A[3][5], 1, 86400, 86400, 10)
+
+
+    return 0
+
+if __name__ == "__main__":
+    N = [[P.open(-P.inf,P.inf),P.open(.8,2)|P.open(13.5,14.5),P.open(0,1)|P.open(2,4)], [P.open(.8,2)|P.open(10,12),P.open(-P.inf,P.inf),P.open(0,1)|P.open(3,4)], [P.open(0,1)|P.open(2,4),P.open(0,1)|P.open(3,4),P.open(-P.inf,P.inf)]]
+
+    #This function generates a bunch of random intervals for you to solve if you want to verify the correctness of the algorithm.
+    #It produces a bunch of random, simple problems
+    #unit_test_intersection()
+
+    #def graph_periodic_intersection_over_various_periods(I, p_min, p_max, max, p_increment):
+    # This produces a nice graph that shows the connected components of this graph nicely
+
+    A = file_parser.soap_converter("./outputs/moongnd-8/moongnd_0 Contact Analysis.csv")
+    entry = A.get_element(0,3)
+
+    #graph_periodic_intersection_over_various_periods(entry, 1, 43200, 86400, 60)
+    workbench_optimal_periodic_extensions(entry, 1, 43200-3600*8, 86400, 1800-480)
+
 
 
 

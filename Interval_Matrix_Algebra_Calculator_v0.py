@@ -597,7 +597,11 @@ def cb3d(M, title, path):
 if __name__ == "__main__":
 
 
-    #A = fp.soap_converter('./outputs/moongnd-8/moongnd_0 Contact Analysis.csv')
+    A = fp.soap_converter('./outputs/moongnd-8/starlink_15_sats_0 Contact Analysis.csv')
+    #print(len(A))
+
+    B = soapConverter('./outputs/moongnd-8/starlink_15_sats_0 Contact Analysis.csv')
+    print(len(B))
     #cb3d(A, "Demo", "hm")
     #So we don't have an empty if block for testing
     #asdf = 1
@@ -637,8 +641,8 @@ if __name__ == "__main__":
     #print(get_max_matrix_endpoint(A))
     #print(make_matrix_periodic(A))
 
-    M = [[P.open(-P.inf,P.inf),P.open(.8,2)|P.open(10,12),P.open(0,1)|P.open(2,5)], [P.open(.8,2)|P.open(10,12),P.open(-P.inf,P.inf),P.open(.5,1)|P.open(3,4)], [P.open(0,1)|P.open(2,4),P.open(0,1)|P.open(3,4),P.open(-P.inf,P.inf)]]
-    print(interval_matrix_mult(M, M))
+    #M = [[P.open(-P.inf,P.inf),P.open(.8,2)|P.open(10,12),P.open(0,1)|P.open(2,5)], [P.open(.8,2)|P.open(10,12),P.open(-P.inf,P.inf),P.open(.5,1)|P.open(3,4)], [P.open(0,1)|P.open(2,4),P.open(0,1)|P.open(3,4),P.open(-P.inf,P.inf)]]
+    #print(interval_matrix_mult(M, M))
 
     #N_2 = [[P.open(-P.inf,P.inf),P.open(.8,6)|P.open(10,12),P.open(0,1)|P.open(2,4)], [P.open(.8,2)|P.open(10,12),P.open(-P.inf,P.inf),P.open(0,1)|P.open(3,4)], [P.open(0,1)|P.open(2,4),P.open(0,1)|P.open(3,4),P.open(-P.inf,P.inf)]]
 
