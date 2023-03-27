@@ -71,6 +71,7 @@ class IntervalMatrix():
         self.symmetric = symmetric
 >>>>>>> b36458b (add `IntervalMatrixIterator`)
 
+
         if array == None:
             self.array = self.get_empty_matrix(n, m)
         else:
