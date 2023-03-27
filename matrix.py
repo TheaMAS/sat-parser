@@ -31,7 +31,8 @@ class IntervalMatrix():
     def __init__(self, n, m, array = None, symmetric=False):
         self.dim_row = n
         self.dim_col = m
-        self.symmetric = symmetric
+        self.max = None
+        self.min = None
 
         if array == None:
             self.array = self.get_empty_matrix(n, m)
@@ -98,8 +99,25 @@ class IntervalMatrix():
             temp = temp + curr_walk
         return temp
 
-    def get_slice(self, window_interval):
-        pass
+    def get_max_endpoint():
+        if self.max != None:
+            return self.max
+        else:
+            ret = None
+            for x in self.matrix:
+                for y in x:
+                    temp = None
+                    for interval in y:
+                        dat = P.to_data(interval)
+                        if temp == None:
+                            temp = dat[0][2]
+                        else:
+                            temp = max(temp, dat[0][2])
+                    if ret == None:
+                        ret = temp
+                    else:
+                        ret = max(ret, temp)
+            return ret
 
     def __add__(self, im):
         if self.dim_row != im.dim_row or self.dim_col != im.dim_col:
