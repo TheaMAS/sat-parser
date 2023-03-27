@@ -34,7 +34,10 @@ class IntervalMatrix():
         self.dim_col = m
         self.max = None
         self.min = None
+<<<<<<< HEAD
         self.symmetric = symmetric
+=======
+>>>>>>> 83b4cb4 (Added max endpoint method to matrix class)
 
         if array == None:
             self.array = self.get_empty_matrix(n, m)
@@ -101,7 +104,11 @@ class IntervalMatrix():
             temp = temp + curr_walk
         return temp
 
+<<<<<<< HEAD
     def get_max_endpoint(self, include_infinity=True):
+=======
+    def get_max_endpoint():
+>>>>>>> 83b4cb4 (Added max endpoint method to matrix class)
         if self.max != None:
             return self.max
         else:
@@ -115,6 +122,7 @@ class IntervalMatrix():
                             temp = dat[0][2]
                         else:
                             temp = max(temp, dat[0][2])
+<<<<<<< HEAD
                     if include_infinity == False and temp != float('inf') or include_infinity == True:
                         if ret == None:
                             ret = temp
@@ -145,6 +153,15 @@ class IntervalMatrix():
 
     def get_slice(self, window_interval):
         pass
+=======
+                    if ret == None:
+                        ret = temp
+                    else:
+                        ret = max(ret, temp)
+            return ret
+
+
+>>>>>>> 83b4cb4 (Added max endpoint method to matrix class)
 
     def __add__(self, im):
         if self.dim_row != im.dim_row or self.dim_col != im.dim_col:
