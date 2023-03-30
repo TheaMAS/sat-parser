@@ -1,6 +1,7 @@
 import portion as P
 import contact_analysis as ca
 import interval_distance_functions as idf
+<<<<<<< HEAD
 
 class IntervalMatrixIterator():
 
@@ -26,6 +27,8 @@ class IntervalMatrixIterator():
         return result
 
 # TODO : add iterate upper
+=======
+>>>>>>> cb4f5e2 (Added average contact matrix function)
 
 class IntervalMatrix():
 
@@ -105,10 +108,14 @@ class IntervalMatrix():
         return temp
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     def get_max_endpoint(self, include_infinity=True):
 =======
     def get_max_endpoint():
 >>>>>>> 83b4cb4 (Added max endpoint method to matrix class)
+=======
+    def get_max_endpoint(self):
+>>>>>>> cb4f5e2 (Added average contact matrix function)
         if self.max != None:
             return self.max
         else:
@@ -156,10 +163,29 @@ class IntervalMatrix():
 =======
                     if ret == None:
                         ret = temp
-                    else:
+                    elif temp != None:
                         ret = max(ret, temp)
             return ret
 
+    def get_min_endpoint(self):
+        if self.min != None:
+            return self.min
+        else:
+            ret = None
+            for x in self.matrix:
+                for y in x:
+                    temp = None
+                    for interval in y:
+                        dat = P.to_data(interval)
+                        if temp == None:
+                            temp = dat[0][1]
+                        else:
+                            temp = min(temp, dat[0][1])
+                    if ret == None:
+                        ret = temp
+                    elif temp != None:
+                        ret = min(ret, temp)
+            return ret
 
 >>>>>>> 83b4cb4 (Added max endpoint method to matrix class)
 
@@ -229,6 +255,7 @@ class IntervalMatrix():
     @staticmethod
     def matrix_multiply_square(A, B, n):
 
+<<<<<<< HEAD
         return None
 
     def matrix_multiply_square_sym(A, B, n):
@@ -281,6 +308,18 @@ class IntervalMatrix():
         matrix = [[P.empty() for j in range(m)] for i in range(n)]
         return IntervalMatrix(n, n, matrix)
 
+=======
+def get_average_contact_matrix(mat):
+    minimum = mat.get_min_endpoint()
+    maximum = mat.get_max_endpoint()
+
+    A = [[None for j in range(mat.dim_col)] for i in range(mat.dim_row)]
+    for k in range(len(A)):
+        for j in range(len(A[0])):
+            A[k][j] = ((maximum - minimum) - idf.xor_distance(mat.get_element(k, j), P.open(minimum, maximum)))/(maximum-minimum)
+
+    return A
+>>>>>>> cb4f5e2 (Added average contact matrix function)
 
 if __name__ == "__main__":
     matrix = IntervalMatrix(3, 3)
@@ -301,8 +340,16 @@ if __name__ == "__main__":
     # matrix = IntervalMatrix(4, 4, matrix_raw)
     matrix = IntervalMatrix(4, 4, matrix_raw_sym)
 
+<<<<<<< HEAD
 
     print("Row: {}. Col: {}".format(matrix.dim_row, matrix.dim_col))
+=======
+    #print(matrix)
+    print(matrix.get_max_endpoint())
+    print(matrix.get_min_endpoint())
+
+    print(get_average_contact_matrix(matrix))
+>>>>>>> cb4f5e2 (Added average contact matrix function)
     #print("M")
     #print(matrix)
     #print("M^2")
@@ -313,6 +360,7 @@ if __name__ == "__main__":
     #print(matrix )
     #print(matrix.is_symmetric())
 
+<<<<<<< HEAD
 
     print(matrix**1)
 
@@ -323,3 +371,6 @@ if __name__ == "__main__":
     M2 = matrix + (matrix * matrix)
     for index, entry in enumerate(M2):
         print(f"({index // m}, {index % n}) : {entry}")
+=======
+    #print(matrix**1)
+>>>>>>> cb4f5e2 (Added average contact matrix function)
