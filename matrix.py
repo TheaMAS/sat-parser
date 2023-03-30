@@ -162,6 +162,7 @@ class IntervalMatrix():
 <<<<<<< HEAD
 <<<<<<< HEAD
     def get_max_endpoint(self, include_infinity=True):
+<<<<<<< HEAD
 =======
     def get_max_endpoint():
 >>>>>>> 83b4cb4 (Added max endpoint method to matrix class)
@@ -171,6 +172,9 @@ class IntervalMatrix():
 =======
     def get_max_endpoint(self, include_infinity=True):
 >>>>>>> 27106d4 (Current work on calculating persistence)
+=======
+
+>>>>>>> 4cf830b (Added average contact matrix function)
         if self.max != None:
             return self.max
         else:
@@ -398,11 +402,14 @@ class IntervalMatrix():
 
         return IntervalMatrix(n, n, array)
 
+<<<<<<< HEAD
     def empty_matrix(n):
         matrix = [[P.empty() for j in range(m)] for i in range(n)]
         return IntervalMatrix(n, n, matrix)
 
 =======
+=======
+>>>>>>> 4cf830b (Added average contact matrix function)
 def get_average_contact_matrix(mat):
     minimum = mat.get_min_endpoint()
     maximum = mat.get_max_endpoint()
@@ -413,6 +420,7 @@ def get_average_contact_matrix(mat):
             A[k][j] = ((maximum - minimum) - idf.xor_distance(mat.get_element(k, j), P.open(minimum, maximum)))/(maximum-minimum)
 
     return A
+<<<<<<< HEAD
 >>>>>>> cb4f5e2 (Added average contact matrix function)
 =======
 >>>>>>> 27106d4 (Current work on calculating persistence)
@@ -426,6 +434,8 @@ def get_average_contact_matrix(mat):
 
         return IntervalMatrix(n, n, array)
 >>>>>>> b36458b (add `IntervalMatrixIterator`)
+=======
+>>>>>>> 4cf830b (Added average contact matrix function)
 
 if __name__ == "__main__":
     matrix = IntervalMatrix(3, 3)
