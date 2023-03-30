@@ -1,5 +1,6 @@
 import portion as P
 import contact_analysis as ca
+import interval_distance_functions as idf
 
 class IntervalMatrix():
 
@@ -60,7 +61,7 @@ class IntervalMatrix():
             temp = temp + curr_walk
         return temp
 
-    def get_max_endpoint():
+    def get_max_endpoint(self):
         if self.max != None:
             return self.max
         else:
@@ -76,10 +77,29 @@ class IntervalMatrix():
                             temp = max(temp, dat[0][2])
                     if ret == None:
                         ret = temp
-                    else:
+                    elif temp != None:
                         ret = max(ret, temp)
             return ret
 
+    def get_min_endpoint(self):
+        if self.min != None:
+            return self.min
+        else:
+            ret = None
+            for x in self.matrix:
+                for y in x:
+                    temp = None
+                    for interval in y:
+                        dat = P.to_data(interval)
+                        if temp == None:
+                            temp = dat[0][1]
+                        else:
+                            temp = min(temp, dat[0][1])
+                    if ret == None:
+                        ret = temp
+                    elif temp != None:
+                        ret = min(ret, temp)
+            return ret
 
 
     def __add__(self, im):
@@ -146,13 +166,20 @@ class IntervalMatrix():
             ret[i][i] = P.open(-P.inf, P.inf)
         return IntervalMatrix(dim, dim, ret) 
 
+def get_average_contact_matrix(mat):
+    minimum = mat.get_min_endpoint()
+    maximum = mat.get_max_endpoint()
 
+    A = [[None for j in range(mat.dim_col)] for i in range(mat.dim_row)]
+    for k in range(len(A)):
+        for j in range(len(A[0])):
+            A[k][j] = ((maximum - minimum) - idf.xor_distance(mat.get_element(k, j), P.open(minimum, maximum)))/(maximum-minimum)
 
-
+    return A
 
 if __name__ == "__main__":
     matrix = IntervalMatrix(3, 3)
-    print(matrix)
+    #print(matrix)
 
     matrix_raw = [
         [P.open(-P.inf,P.inf), P.closed(0, 6), P.closed(6, 10), P.empty()],
@@ -161,23 +188,27 @@ if __name__ == "__main__":
         [P.empty(), P.empty(), P.empty(), P.open(-P.inf,P.inf)]
     ]
     matrix_raw_sym = [
-        [P.open(-P.inf,P.inf), P.closed(0, 6), P.closed(6, 10), P.empty()],
-        [P.closed(0, 6), P.open(-P.inf,P.inf), P.closed(1, 4), P.closed(3, 7)],
-        [P.closed(6, 10), P.closed(1, 4), P.open(-P.inf,P.inf), P.closed(0, 8)],
-        [P.empty(), P.closed(3, 7), P.closed(0, 8), P.open(-P.inf,P.inf)]
+        [P.open(0,20), P.closed(0, 6), P.closed(6, 10), P.empty()],
+        [P.closed(0, 6), P.open(0, 20), P.closed(1, 4), P.closed(3, 7)],
+        [P.closed(6, 10), P.closed(1, 4), P.open(0, 20), P.closed(0, 8)],
+        [P.empty(), P.closed(3, 7), P.closed(0, 8), P.open(0, 20)]
     ]
     # matrix = IntervalMatrix(4, 4, matrix_raw)
     matrix = IntervalMatrix(4, 4, matrix_raw_sym)
 
-    print("M")
-    print(matrix)
-    print("M^2")
-    print(matrix + (matrix * matrix))
-    print("M^3")
-    print(matrix + (matrix * matrix) + matrix * matrix * matrix)
-    print("A^3")
-    print(matrix )
+    #print(matrix)
+    print(matrix.get_max_endpoint())
+    print(matrix.get_min_endpoint())
 
-    print(matrix.is_symmetric())
+    print(get_average_contact_matrix(matrix))
+    #print("M")
+    #print(matrix)
+    #print("M^2")
+    #print(matrix + (matrix * matrix))
+    #print("M^3")
+    #print(matrix + (matrix * matrix) + matrix * matrix * matrix)
+    #print("A^3")
+    #print(matrix )
+    #print(matrix.is_symmetric())
 
-    print(matrix**1)
+    #print(matrix**1)
