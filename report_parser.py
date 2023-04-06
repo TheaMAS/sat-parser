@@ -1,4 +1,5 @@
 from orb_parser import *
+from matrix import IntervalMatrix
 
 import numpy as np
 
@@ -8,10 +9,11 @@ from datetime import datetime # for getting time period of contact output
 
 import logging
 
-logger = logging.getLogger(__name__)
+# logger = logging.getLogger(__name__)
+logger = logging.getLogger("report_parser")
+logger.setLevel(logging.WARNING)
 # logging.basicConfig(level=logging.DEBUG)
-logging.basicConfig(level=logging.INFO)
-
+logging.basicConfig(level=logging.WARN)
 
 def contact_analysis_parser_v14(content):
 	"""
@@ -20,7 +22,7 @@ def contact_analysis_parser_v14(content):
 	is a dictionary : `connection`, `source`, `destination`, and `list` of
 	contact times.
 	"""
-	logging.info("Running `contact_analysis_parser_v14`")
+	logger.info("Running `contact_analysis_parser_v14`")
 
 	content = content.split("Analysis,")
 	contact_plan = []
@@ -37,11 +39,11 @@ def contact_analysis_parser_v14(content):
 		for line in block_lines[2:-2]:
 			entries = line.split(",")
 
-			rise = float(entries[0])
-			set = float(entries[1])
+			rise_time = float(entries[0])
+			set_time = float(entries[1])
 			duration = float(entries[2])
 
-			contacts.append({"rise" : rise, "set" : set, "duration" : duration})
+			contacts.append({"rise" : rise_time, "set" : set_time, "duration" : duration})
 
 		contact = {
 			"connection" : connection,
@@ -61,7 +63,7 @@ def contact_analysis_parser_v15(content):
 	is a dictionary : `connection`, `source`, `destination`, and `list` of
 	contact times.
 	"""
-	logging.info("Running `contact_analysis_parser_v15`")
+	logger.info("Running `contact_analysis_parser_v15`")
 
 	content = content.split("Analysis,")[1]
 	lines = content.split("\n")
@@ -78,20 +80,25 @@ def contact_analysis_parser_v15(content):
 			current_connection = connection
 			blocks[current_connection] = []
 
-		rise = float(entries[1])
-		set = float(entries[2])
+		rise_time = float(entries[1])
+		set_time = float(entries[2])
 		duration = float(entries[3])
 
-		blocks[current_connection].append({"rise" : rise, "set" : set, "duration" : duration})
+		blocks[current_connection].append({"rise" : rise_time, "set" : set_time, "duration" : duration})
 
 	# print(blocks)
 
 	contact_plan = []
 
+	sats = set()
 	for key, value in blocks.items():
 		# print(key)
 		# print(value)
 		source, destination = key.split(" - ")
+		
+		sats.add(source)
+		sats.add(destination)
+
 		contact = {
 			"connection" : key,
 			"source" : source,
@@ -99,6 +106,7 @@ def contact_analysis_parser_v15(content):
 			"list" : value
 		}
 		contact_plan.append(contact)
+	# print(sats)
 	# print(content)
 
 	# print(contact_plan)
@@ -110,7 +118,7 @@ def contact_analysis_parser(filename):
 	Main function used to parse a contact analysis csv output from soap.
 	It takes in a csv from soap v14 or v15 and parses it appropriately.
 	"""
-	logging.info(f"Running `contact_analysis_parser` on `{filename}`")
+	logger.info(f"Running `contact_analysis_parser` on `{filename}`")
 
 	content = ""
 	with open(filename) as f:
@@ -140,7 +148,7 @@ def parse_contact_analysis_time(filepath):
 
 		"Start: 2022/04/30 01:43:00.00, Stop: 2022/05/01 01:43:00.00,"
 	"""
-	logging.info(f"Running `parse_contact_analysis_time` on `{filename}`")
+	logger.info(f"Running `parse_contact_analysis_time` on `{filename}`")
 
 	content = ""
 	with open(filename) as f:
@@ -174,7 +182,7 @@ if __name__ == "__main__":
 
 # `construct_graph` is internal function to this module.
 #	Not to be confused with user accessible graph objects.
-def construct_graph(contact_plan):
+def construct_graph(contact_plan, delta = 1):
 	"""
 	This function takes the contact plan output from `contact_analysis_parser`
 	and creates a "graph" dictionary consisting of a dictionary of nodes
@@ -184,7 +192,7 @@ def construct_graph(contact_plan):
 	Each edge has key the name of the source and the name of the target,
 		and value the list of rise and set times.
 	"""
-	logging.info("Running `construct_graph`")
+	logger.info("Running `construct_graph`")
 
 	nodes = {};
 	edges = {}
@@ -201,8 +209,8 @@ def construct_graph(contact_plan):
 		set_prev = -1
 		for entry in contact["list"]:
 
-			rise = entry["rise"]
-			set = entry["set"]
+			rise_time = entry["rise"]
+			set_time = entry["set"]
 
 			if source not in nodes:
 				nodes[source] = node_counter;
@@ -214,27 +222,60 @@ def construct_graph(contact_plan):
 			if connection not in edges:
 				edges[connection] = []
 
-			if set_prev == rise or (rise - set_prev < 1):
+			if set_prev == rise_time or (rise_time - set_prev < delta):
 				# This shouldn't happen : soap bug
+				# if len(edges[connection]) > 1:
 				edges[connection].pop()
 				# print("internal : ERROR")
 			else:
-				edges[connection].append(rise)
-			edges[connection].append(set)
+				edges[connection].append(rise_time)
+			edges[connection].append(set_time)
 			
-			set_prev = set
+			set_prev = set_time
 			# print("we have a connection", source, destination, "born at", rise, "dies at", set)
 
 	# print(nodes)
 		# print(contact["connection"])
 	return {"nodes" : nodes, "edges" : edges}
 
+# TODO : add description; rename : `graph_to_matrix`
+def soap_converter(filename):
+    contact_plan = contact_analysis_parser(filename)
+    graph = construct_graph(contact_plan)
+
+    nodes = graph["nodes"]
+    edges = graph["edges"]
+
+    node_counter = len(nodes)
+
+    #generate blank matrix for overall
+    matrix=[[ P.empty() for i in range(node_counter) ] for j in range(node_counter)]
+    #diagonal is all R (for now, should be adjusted to min/max time in future rev)
+    for i in range(node_counter):
+        matrix[i][i]=P.open(-P.inf,P.inf)
+
+    #generate interval for each edge and append it to matrix via union
+    for edge_key, edge_times in edges.items():
+        source, destination = edge_key.split(' - ')
+
+        # print(len(edge_times))
+
+        for i in range(0, len(edge_times), 2):
+            rise_time = edge_times[i]
+            set_time = edge_times[i + 1]
+
+            #add interval to both F[i][j] and F[j][i] via union (should create disjoint unions generally)
+            matrix[nodes[source]][nodes[destination]] = matrix[nodes[source]][nodes[destination]] | P.open(rise_time, set_time)
+            matrix[nodes[destination]][nodes[source]] = matrix[nodes[destination]][nodes[source]] | P.open(rise_time, set_time)
+
+    return IntervalMatrix(node_counter, node_counter, matrix)
+
 def get_satellite_names(graph):
 	"""
 	Given a `graph` as in `construct_graph`, we get the names of the satellites
 		in the simulation.
 	"""
-	logging.info("Running `distances_report_parser`")
+	logger.info("Running `distances_report_parser`")
 
 	satellite_names = list(graph["nodes"].keys())
 
@@ -251,7 +292,7 @@ def extract_critical_times(graph):
 	underlying graph changes in the temporal graph. The list is sorted
 	from smallest to largest.
 	"""
-	logging.info("Running `extract_critical_times`")
+	logger.info("Running `extract_critical_times`")
 
 	times = []
 
@@ -277,7 +318,7 @@ def sample_critical_times(critical_times):
 	Given a set of critical times of a temporal graph, this returns a list
 	of time strictly between the critical times.
 	"""
-	logging.info("Running `sample_critical_times`")
+	logger.info("Running `sample_critical_times`")
 
 	# samples[i] = midpoint between c_times[i+ 1] and c_times[i]
 	critical_samples = []
@@ -296,13 +337,40 @@ def get_graph_length(graph):
 	returns the length of the temporal graph, defined to be the largest
 	critical time minus the smallest critical time.
 	"""
-	logging.info("Running `get_graph_length`")
+	logger.info("Running `get_graph_length`")
 
 	critical_times = extract_critical_times(graph)
 
 	length = critical_times[-1] - critical_times[0]
 
 	return length
+
+def construct_weighted_simplex_from_matrix(matrix):
+	"""
+	Given an (square) IntervalMatrix object, we construct the filtered 
+		simplicial complex that Dionysus uses.
+	"""
+	logger.info("Running `construct_weighted_simplex_from_matrix`")
+
+	m = matrix.dim_row
+	simplex = []
+	times = []
+
+	for i in range(m):
+		simplex.append([node_number])
+		times.append([0]) # all nodes born at time zero and exist througout
+
+	for i in range(m):
+		for j in range(i + 1, m):
+			simplex.append([i, j])
+
+			edge_times = []
+			for interval in list(matrix.get_element(i, j)):
+				edge_times.append(interval.lower) # max(start_time, interval.lower)
+				edge_times.append(interval.upper) # min(end_time, interval.upper)
+			times.append(edge_times)
+
+	return {"simplex" : simplex, "times" : times}
 
 def construct_weighted_simplex(graph):
 	"""
@@ -312,7 +380,7 @@ def construct_weighted_simplex(graph):
 
 	The output is a dictionary with two keys `simplex` and `times`.
 	"""
-	logging.info("Running `construct_weighted_simplex`")
+	logger.info("Running `construct_weighted_simplex`")
 
 	nodes = graph["nodes"]
 	edges = graph["edges"]
@@ -349,7 +417,7 @@ def distances_report_parser(filename):
 
 	distances[time_slice]["satA-satB"] = distance (in km)
 	"""
-	logging.info(f"Running `distances_report_parser` on `{filename}`")
+	logger.info(f"Running `distances_report_parser` on `{filename}`")
 
 	content = ""
 	with open(filename) as f:
@@ -415,7 +483,7 @@ def coordinates_report_parser(filename):
 	coordinates[time_slice][target] = [x, y, z]
 	"""
 
-	logging.info(f'Running `coordinates_report_parser` on `{filename}`')
+	logger.info(f'Running `coordinates_report_parser` on `{filename}`')
 
 	content = ""
 	with open(filename) as f:
@@ -473,7 +541,7 @@ def get_origin_body(platforms, target_name):
 		return the origin body.
 	"""
 
-	logging.info(f'Running `get_origin_body` for `{target_name}`')
+	logger.info(f'Running `get_origin_body` for `{target_name}`')
 
 	origin = "Earth"
 	for platform in platforms:
