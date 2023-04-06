@@ -1,10 +1,14 @@
 import portion as P
 import dionysus as d
 from itertools import permutations
+from matrix import *
 
 import Interval_Matrix_Algebra_Calculator_v0 as imac
 import numpy as np 
+from scipy import stats
+import math
 
+# TODO : rewrite all of this to use the IntervalMatrix class
 
 def tvg_to_diagram_matrix(A, start_time, end_time):
     """
@@ -45,12 +49,12 @@ def tvg_to_complement_diagram_matrix(A, start_time, end_time):
         of dionysus diagrams. Each entry is a diagram consisting of the 
         complement of the intervals in the interval object.
     """
-    m = len(A)
+    m = A.dim_row
     diagram = []
     for i in range(m):
         diagram.append([])
         for j in range(m):
-            intervals = list(A[i][j])
+            intervals = list(A.get_element(i, j))
             diagram_ij = d.Diagram()
             # print(intervals)
             intervals_c = []
@@ -234,26 +238,81 @@ def get_length(intervals, min, max):
         length += upper - lower
     return length
 
-def tvg_lifetime_matrix(A_walks, start_time, end_time, r):
-    A = A_walks[1]
-    n = len(A)
+# def tvg_lifetime_matrix(A_walks, start_time, end_time, r):
+#     A = A_walks[1]
+#     n = len(A)
+#     L = {}
+
+#     # check r < len(A_walks)
+
+#     for k in range(0, r):
+#         # print("Calculating {}-star".format(k))
+
+#         A_star = A_walks[0] # starting with identity matrix A^0
+#         for i in range(1, k):
+#             A_star = imac.interval_matrix_sum(A_star, A_walks[i])
+
+#         for i in range(0, n):        
+#             for j in range(i + 1, n):
+#                 # print("\ti = {}, j = {}".format(i, j))
+#                 entry = A_star[i][j]
+#                 # print(entry)
+#                 entry_length = get_length(entry, start_time, end_time)
+#                 L[(k, i, j)] = entry_length
+#                 # print(get_length(entry, start_time, end_time))
+#     return L
+
+def tvg_lifetime_matrix(walks, start_time, end_time, walk_length):
+
+    n = walks[0].dim_row
     L = {}
 
-    # check r < len(A_walks)
-
-    for k in range(0, r):
-        # print("Calculating {}-star".format(k))
-
-        A_star = A_walks[0] # starting with identity matrix A^0
+    for k in range(0, walk_length):
+        star_sum = walks[0] # starting with identity matrix A^0
         for i in range(1, k):
-            A_star = imac.interval_matrix_sum(A_star, A_walks[i])
-
-        for i in range(0, n):        
+            star_sum = star_sum + walks[i]
+        
+        for i in range(n):
             for j in range(i + 1, n):
-                # print("\ti = {}, j = {}".format(i, j))
-                entry = A_star[i][j]
-                # print(entry)
-                entry_length = get_length(entry, start_time, end_time)
-                L[(k, i, j)] = entry_length
-                # print(get_length(entry, start_time, end_time))
+                L[(k, i, j)] = get_length(star_sum.get_element(i, j), start_time, end_time)
+                
     return L
+
+def generate_y_list(L, m, walk_length):
+    y_list = []
+
+    for i in range(0, m):
+        for j in range(i + 1, m):
+            y = []
+            for k in range(0, walk_length):
+                interval_sum = L[(k, i, j)]
+                y.append(interval_sum)
+            y_list.append(y)
+    return y_list
+
+def calculate_y_list_average(y_list, walk_length):
+    y_list_average = []
+    
+    for k in range(0, walk_length):
+        average_sum = 0
+        for y in y_list:
+            average_sum += y[k]
+        average = average_sum / len(y_list)
+        y_list_average.append(average)
+
+    return y_list_average
+
+# source : https://pythonguides.com/scipy-confidence-interval/
+def confidence_interval(data, confidence=0.95):
+    data = np.array(data)
+    length = len(data)
+    mean, std_error = np.mean(data), stats.sem(data)
+    h = std_error * stats.t.ppf((1 + confidence) / 2.0, length - 1)
+    return mean, mean - h, mean + h
+
+def error_bars(data):
+    data = np.array(data)
+    length = len(data)
+    mean, std = np.mean(data), np.std(data)
+    error = 2 * std / math.sqrt(length)
+    return mean, mean - error, mean + error
