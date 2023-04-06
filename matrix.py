@@ -13,14 +13,19 @@ class IntervalMatrix():
             # TODO : check it has the right dimensions for every column and row
             self.matrix = matrix
 
+    # TODO : delete; moved below into @staticmethod
     def get_empty_matrix(self, n, m):
         return [[P.empty() for j in range(m)] for i in range(n)]
     
+    # TODO : maybe rename to get_entry?
     def get_element(self, i, j):
         return self.matrix[i][j]
 
     def set_element(self, i, j, value):
         self.matrix[i][j] = value
+
+    def get_dimension(self):
+        return (self.dim_row, self.dim_col)
 
     def is_symmetric(self):
         if self.dim_row != self.dim_col:
@@ -115,16 +120,30 @@ class IntervalMatrix():
         return "\n".join(strings)
 
     @staticmethod
-    def identity(n):
-        ret = [[] for x in range(dim)]
-        for i, idx in enumerate(ret):
-            ret[i] = [P.empty() for x in range(dim)]
-            ret[i][i] = P.open(-P.inf, P.inf)
-        return IntervalMatrix(dim, dim, ret) 
+    def empty_matrix(n):
+        matrix = [[P.empty() for j in range(m)] for i in range(n)]
+        return IntervalMatrix(n, n, matrix)
 
+    @staticmethod
+    def identity_matrix(n):
+        """
+        Returns an `n` square matrix with [-infty, infty] along the diagonal,
+            and emptyset everywhere else. 
+        """
+        matrix = [[P.empty() for j in range(n)] for i in range(n)]
+        for i in range(n):
+            matrix[i][i] = P.open(-P.inf, P.inf)
 
+        return IntervalMatrix(n, n, matrix) 
 
+    @staticmethod
+    def complete_matrix(n):
+        """
+        Returns an `n` square matrix with [-infty, infty] in each entry.
+        """
+        matrix = [[P.closed(-P.inf, P.inf) for j in range(n)] for i in range(n)]
 
+        return IntervalMatrix(n, n, matrix)
 
 if __name__ == "__main__":
     matrix = IntervalMatrix(3, 3)
