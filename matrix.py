@@ -48,6 +48,7 @@ class IntervalMatrix():
             # TODO : check it has the right dimensions for every column and row
             self.array = array
 
+<<<<<<< HEAD
     def __getitem__(self, index):
         return self.array[index[0]][index[1]]
 
@@ -57,6 +58,8 @@ class IntervalMatrix():
     def __iter__(self):
         return IntervalMatrixIterator(self)
 
+=======
+>>>>>>> c4a59cb (Added static methods to `IntervalMatrix`)
     # TODO : delete; moved below into @staticmethod
     def get_empty_matrix(self, n, m):
         return [[P.empty() for j in range(m)] for i in range(n)]
@@ -67,6 +70,9 @@ class IntervalMatrix():
 
     def set_element(self, i, j, value):
         self.array[i][j] = value
+
+    def get_dimension(self):
+        return (self.dim_row, self.dim_col)
 
     def get_dimension(self):
         return (self.dim_row, self.dim_col)
@@ -264,6 +270,7 @@ class IntervalMatrix():
         return "\n".join(strings)
 
     @staticmethod
+<<<<<<< HEAD
     def matrix_multiply_square(A, B, n):
 
 <<<<<<< HEAD
@@ -296,15 +303,28 @@ class IntervalMatrix():
         array = [[P.empty() for j in range(n)] for i in range(m)]
         return IntervalMatrix(n, n, matarrayrix)
 
+=======
+    def empty_matrix(n):
+        matrix = [[P.empty() for j in range(m)] for i in range(n)]
+        return IntervalMatrix(n, n, matrix)
+
+>>>>>>> c4a59cb (Added static methods to `IntervalMatrix`)
     @staticmethod
     def identity_matrix(n):
         """
         Returns an `n` square matrix with [-infty, infty] along the diagonal,
             and emptyset everywhere else. 
         """
+<<<<<<< HEAD
         array = [[P.empty() for j in range(n)] for i in range(n)]
         for i in range(n):
             array[i][i] = P.open(-P.inf, P.inf)
+=======
+        matrix = [[P.empty() for j in range(n)] for i in range(n)]
+        for i in range(n):
+            matrix[i][i] = P.open(-P.inf, P.inf)
+
+>>>>>>> c4a59cb (Added static methods to `IntervalMatrix`)
         return IntervalMatrix(n, n, matrix) 
 
     @staticmethod
@@ -312,6 +332,7 @@ class IntervalMatrix():
         """
         Returns an `n` square matrix with [-infty, infty] in each entry.
         """
+<<<<<<< HEAD
         array = [[P.closed(-P.inf, P.inf) for j in range(n)] for i in range(n)]
 
         return IntervalMatrix(n, n, array)
@@ -334,6 +355,11 @@ def get_average_contact_matrix(mat):
 >>>>>>> cb4f5e2 (Added average contact matrix function)
 =======
 >>>>>>> 27106d4 (Current work on calculating persistence)
+=======
+        matrix = [[P.closed(-P.inf, P.inf) for j in range(n)] for i in range(n)]
+
+        return IntervalMatrix(n, n, matrix)
+>>>>>>> c4a59cb (Added static methods to `IntervalMatrix`)
 
 if __name__ == "__main__":
     matrix = IntervalMatrix(3, 3)
