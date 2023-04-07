@@ -43,7 +43,7 @@ def tvg_to_diagram_matrix(A, start_time, end_time):
             diagram[i].append(diagram_ij)
     return diagram
 
-def tvg_to_complement_diagram_matrix(A, start_time, end_time):
+def tvg_to_complement_diagram_matrix(A, start_time, end_time, delta = 0.1):
     """
     Takes in an interval matrix associated to a TVG and returns a matrix
         of dionysus diagrams. Each entry is a diagram consisting of the 
@@ -77,8 +77,15 @@ def tvg_to_complement_diagram_matrix(A, start_time, end_time):
                 # print("({}, {})".format(lower, upper))
         
                 # manually remove singletons to avoid dionysus2 bug
-                if lower != upper:
+                # if lower != upper:
+                if upper - lower >= delta:
                     diagram_ij.append(d.DiagramPoint(lower, upper))
+
+                    # if upper - lower < 0.5:
+                    #     print(f"maybe bug still here : {upper - lower}")
+                
+                # if upper - lower >= 0.5:
+                #     diagram_ij.append(d.DiagramPoint(lower, upper))
                 
                 lower = interval.upper
                 if interval.upper == P.inf:
@@ -88,8 +95,13 @@ def tvg_to_complement_diagram_matrix(A, start_time, end_time):
             # print("complement : {}".format(intervals_c))
             
             # manually remove singletons to avoid dionysus2 bug
-            if lower != end_time:
+            # if lower != end_time:
+            if end_time - lower >= delta:
                 diagram_ij.append(d.DiagramPoint(lower, end_time))
+
+                # if end_time - lower < 0.5:
+                #     print(f"maybe bug still here : ({lower}, {end_time}) : {end_time - lower}")
+
             diagram[i].append(diagram_ij)
     return diagram
 
