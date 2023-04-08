@@ -100,7 +100,7 @@ class IntervalMatrix():
             temp = temp + curr_walk
         return temp
 
-    def get_max_endpoint(self):
+    def get_max_endpoint(self, include_infinity=True):
         if self.max != None:
             return self.max
         else:
@@ -114,13 +114,14 @@ class IntervalMatrix():
                             temp = dat[0][2]
                         else:
                             temp = max(temp, dat[0][2])
-                    if ret == None:
-                        ret = temp
-                    elif temp != None:
-                        ret = max(ret, temp)
+                    if include_infinity == False and temp != float('inf') or include_infinity == True:
+                        if ret == None:
+                            ret = temp
+                        elif temp != None:
+                            ret = max(ret, temp)
             return ret
 
-    def get_min_endpoint(self):
+    def get_min_endpoint(self, include_infinity=True):
         if self.min != None:
             return self.min
         else:
@@ -134,10 +135,11 @@ class IntervalMatrix():
                             temp = dat[0][1]
                         else:
                             temp = min(temp, dat[0][1])
-                    if ret == None:
-                        ret = temp
-                    elif temp != None:
-                        ret = min(ret, temp)
+                    if include_infinity == False and temp != float('-inf') or include_infinity == True:
+                        if ret == None:
+                            ret = temp
+                        elif temp != None:
+                            ret = min(ret, temp)
             return ret
 
 
@@ -256,16 +258,6 @@ class IntervalMatrix():
 
         return IntervalMatrix(n, n, array)
 
-def get_average_contact_matrix(mat):
-    minimum = mat.get_min_endpoint()
-    maximum = mat.get_max_endpoint()
-
-    A = [[None for j in range(mat.dim_col)] for i in range(mat.dim_row)]
-    for k in range(len(A)):
-        for j in range(len(A[0])):
-            A[k][j] = ((maximum - minimum) - idf.xor_distance(mat.get_element(k, j), P.open(minimum, maximum)))/(maximum-minimum)
-
-    return A
 
 if __name__ == "__main__":
     matrix = IntervalMatrix(3, 3)
@@ -285,3 +277,4 @@ if __name__ == "__main__":
     ]
     # matrix = IntervalMatrix(4, 4, matrix_raw)
     matrix = IntervalMatrix(4, 4, matrix_raw_sym)
+
