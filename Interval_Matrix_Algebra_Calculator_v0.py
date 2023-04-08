@@ -22,7 +22,6 @@ import contact_analysis as ca
 import networkx as nx
 import numpy as np
 import file_parser as fp
-from matrix import IntervalMatrix
 # from skimage import metrics
 import warnings
 
