@@ -66,6 +66,7 @@ def average_contact_filtration(A, t):
     return ret
 
 
+<<<<<<< HEAD
 def test_1():
     print("Test 1")
     M = IntervalMatrix(4, 4)
@@ -169,6 +170,16 @@ if __name__ == "__main__":
     matrix = IntervalMatrix(3, 3)
     #print(matrix)
     
+=======
+if __name__ == "__main__":
+    #file = 'outputs/moongnd-8/starlink_15_sats_0 Contact Analysis.csv'
+    file = 'outputs/moongnd-8/starlink_0 Contact Analysis.csv'
+    A = fp.soap_converter(file)
+
+    matrix = IntervalMatrix(3, 3)
+    #print(matrix)
+
+>>>>>>> 27106d4 (Current work on calculating persistence)
     matrix_raw = [
         [P.open(-P.inf,P.inf), P.closed(0, 6), P.closed(6, 10), P.empty()],
         [P.empty(), P.open(-P.inf,P.inf), P.closed(1, 4), P.closed(3, 7)],
@@ -184,12 +195,16 @@ if __name__ == "__main__":
     # matrix = IntervalMatrix(4, 4, matrix_raw)
     matrix = IntervalMatrix(4, 4, matrix_raw_sym)
 
+<<<<<<< HEAD
     
+=======
+>>>>>>> 27106d4 (Current work on calculating persistence)
     #print(matrix)
     #print(matrix.get_max_endpoint())
     #print(matrix.get_min_endpoint())
 
     #print(get_average_contact_matrix(matrix))
+<<<<<<< HEAD
     '''
 
 
@@ -198,6 +213,11 @@ if __name__ == "__main__":
     #file = 'outputs/moongnd-8/starlink_15_sats_0 Contact Analysis.csv'
     file = 'outputs/moongnd-8/starlink_0 Contact Analysis.csv'
     A = fp.soap_converter(file)
+=======
+
+    #print(A)
+
+>>>>>>> 27106d4 (Current work on calculating persistence)
     filt = average_contact_filtration(A, .99)
     print("Average Contact Filtration, t = .99")
     #print(filt)
@@ -216,6 +236,10 @@ if __name__ == "__main__":
     #    filt = average_contact_filtration(A, j)
     #    print(imac.A_star(filt.matrix))
 
+<<<<<<< HEAD
     #print(average_contact_filtration(A, .2))
     '''
 
+=======
+    #print(average_contact_filtration(A, .2))
+>>>>>>> 27106d4 (Current work on calculating persistence)

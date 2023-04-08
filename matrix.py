@@ -109,6 +109,7 @@ class IntervalMatrix():
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     def get_max_endpoint(self, include_infinity=True):
 =======
     def get_max_endpoint():
@@ -116,6 +117,9 @@ class IntervalMatrix():
 =======
     def get_max_endpoint(self):
 >>>>>>> cb4f5e2 (Added average contact matrix function)
+=======
+    def get_max_endpoint(self, include_infinity=True):
+>>>>>>> 27106d4 (Current work on calculating persistence)
         if self.max != None:
             return self.max
         else:
@@ -130,11 +134,15 @@ class IntervalMatrix():
                         else:
                             temp = max(temp, dat[0][2])
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 27106d4 (Current work on calculating persistence)
                     if include_infinity == False and temp != float('inf') or include_infinity == True:
                         if ret == None:
                             ret = temp
                         elif temp != None:
                             ret = max(ret, temp)
+<<<<<<< HEAD
             return ret
 
     def get_min_endpoint(self, include_infinity=True):
@@ -165,9 +173,11 @@ class IntervalMatrix():
                         ret = temp
                     elif temp != None:
                         ret = max(ret, temp)
+=======
+>>>>>>> 27106d4 (Current work on calculating persistence)
             return ret
 
-    def get_min_endpoint(self):
+    def get_min_endpoint(self, include_infinity=True):
         if self.min != None:
             return self.min
         else:
@@ -181,10 +191,11 @@ class IntervalMatrix():
                             temp = dat[0][1]
                         else:
                             temp = min(temp, dat[0][1])
-                    if ret == None:
-                        ret = temp
-                    elif temp != None:
-                        ret = min(ret, temp)
+                    if include_infinity == False and temp != float('-inf') or include_infinity == True:
+                        if ret == None:
+                            ret = temp
+                        elif temp != None:
+                            ret = min(ret, temp)
             return ret
 
 >>>>>>> 83b4cb4 (Added max endpoint method to matrix class)
@@ -256,6 +267,7 @@ class IntervalMatrix():
     def matrix_multiply_square(A, B, n):
 
 <<<<<<< HEAD
+<<<<<<< HEAD
         return None
 
     def matrix_multiply_square_sym(A, B, n):
@@ -320,6 +332,8 @@ def get_average_contact_matrix(mat):
 
     return A
 >>>>>>> cb4f5e2 (Added average contact matrix function)
+=======
+>>>>>>> 27106d4 (Current work on calculating persistence)
 
 if __name__ == "__main__":
     matrix = IntervalMatrix(3, 3)
@@ -345,11 +359,23 @@ if __name__ == "__main__":
     print("Row: {}. Col: {}".format(matrix.dim_row, matrix.dim_col))
 =======
     #print(matrix)
-    print(matrix.get_max_endpoint())
-    print(matrix.get_min_endpoint())
+    #print(matrix.get_max_endpoint())
+    #print(matrix.get_min_endpoint())
 
+    #print(get_average_contact_matrix(matrix))
+
+    for k in range(0, 10, 1):
+        j = (float)(k/10)
+        filt = average_contact_filtration(matrix, j)
+        print(imac.A_star(filt.matrix))
+
+    print(average_contact_filtration(matrix, .2))
+
+<<<<<<< HEAD
     print(get_average_contact_matrix(matrix))
 >>>>>>> cb4f5e2 (Added average contact matrix function)
+=======
+>>>>>>> 27106d4 (Current work on calculating persistence)
     #print("M")
     #print(matrix)
     #print("M^2")
