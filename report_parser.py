@@ -357,7 +357,7 @@ def construct_weighted_simplex_from_matrix(matrix):
 	times = []
 
 	for i in range(m):
-		simplex.append([node_number])
+		simplex.append([i])
 		times.append([0]) # all nodes born at time zero and exist througout
 
 	for i in range(m):
