@@ -163,6 +163,7 @@ class IntervalMatrix():
 <<<<<<< HEAD
     def get_max_endpoint(self, include_infinity=True):
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     def get_max_endpoint():
 >>>>>>> 83b4cb4 (Added max endpoint method to matrix class)
@@ -175,6 +176,8 @@ class IntervalMatrix():
 =======
 
 >>>>>>> 4cf830b (Added average contact matrix function)
+=======
+>>>>>>> f4d7dda (Current work on calculating persistence)
         if self.max != None:
             return self.max
         else:
@@ -403,6 +406,7 @@ class IntervalMatrix():
         return IntervalMatrix(n, n, array)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     def empty_matrix(n):
         matrix = [[P.empty() for j in range(m)] for i in range(n)]
         return IntervalMatrix(n, n, matrix)
@@ -436,6 +440,8 @@ def get_average_contact_matrix(mat):
 >>>>>>> b36458b (add `IntervalMatrixIterator`)
 =======
 >>>>>>> 4cf830b (Added average contact matrix function)
+=======
+>>>>>>> f4d7dda (Current work on calculating persistence)
 
 if __name__ == "__main__":
     matrix = IntervalMatrix(3, 3)
@@ -458,6 +464,7 @@ if __name__ == "__main__":
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
     print("Row: {}. Col: {}".format(matrix.dim_row, matrix.dim_col))
 =======
@@ -468,6 +475,8 @@ if __name__ == "__main__":
 >>>>>>> a2b9ac1 (0004 Continued refactoring of visualization code)
 
 
+=======
+>>>>>>> f4d7dda (Current work on calculating persistence)
     for k in range(0, 10, 1):
         j = (float)(k/10)
         filt = average_contact_filtration(matrix, j)
@@ -506,8 +515,12 @@ if __name__ == "__main__":
     for index, entry in enumerate(M2):
         print(f"({index // m}, {index % n}) : {entry}")
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     #print(matrix**1)
 >>>>>>> cb4f5e2 (Added average contact matrix function)
 =======
 >>>>>>> b36458b (add `IntervalMatrixIterator`)
+=======
+
+>>>>>>> f4d7dda (Current work on calculating persistence)
