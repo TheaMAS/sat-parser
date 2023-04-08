@@ -71,7 +71,6 @@ class IntervalMatrix():
         self.symmetric = symmetric
 >>>>>>> b36458b (add `IntervalMatrixIterator`)
 
-
         if array == None:
             self.array = self.get_empty_matrix(n, m)
         else:
@@ -118,9 +117,6 @@ class IntervalMatrix():
         return (self.dim_row, self.dim_col)
 =======
 >>>>>>> b36458b (add `IntervalMatrixIterator`)
-
-    def get_dimension(self):
-        return (self.dim_row, self.dim_col)
 
     def is_symmetric(self):
         if self.dim_row != self.dim_col:
@@ -418,6 +414,7 @@ def get_average_contact_matrix(mat):
     minimum = mat.get_min_endpoint()
     maximum = mat.get_max_endpoint()
 
+<<<<<<< HEAD
     A = [[None for j in range(mat.dim_col)] for i in range(mat.dim_row)]
     for k in range(len(A)):
         for j in range(len(A[0])):
@@ -443,6 +440,8 @@ def get_average_contact_matrix(mat):
 =======
 >>>>>>> f4d7dda (Current work on calculating persistence)
 
+=======
+>>>>>>> eeca608 (add `IntervalMatrixIterator`)
 if __name__ == "__main__":
     matrix = IntervalMatrix(3, 3)
     #print(matrix)
