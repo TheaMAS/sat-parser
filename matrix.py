@@ -30,6 +30,31 @@ class IntervalMatrixIterator():
 =======
 >>>>>>> cb4f5e2 (Added average contact matrix function)
 
+class IntervalMatrixIterator():
+
+    def __init__(self, matrix):
+        self.matrix = matrix
+        self.index = (0, 0)
+
+    def __next__(self):
+
+        m = self.matrix.dim_row
+        n = self.matrix.dim_col
+
+        if self.index[0] == m:
+            raise StopIteration()
+
+        result = self.matrix[self.index]
+
+        if self.index[1] + 1 == n:
+            self.index = (self.index[0] + 1, 0)
+        else: 
+            self.index = (self.index[0], self.index[1] + 1)
+
+        return result
+
+# TODO : add iterate upper
+
 class IntervalMatrix():
 
     def __init__(self, n, m, array = None, symmetric=False):
@@ -38,15 +63,31 @@ class IntervalMatrix():
         self.max = None
         self.min = None
 <<<<<<< HEAD
+<<<<<<< HEAD
         self.symmetric = symmetric
 =======
 >>>>>>> 83b4cb4 (Added max endpoint method to matrix class)
+=======
+        self.symmetric = symmetric
+>>>>>>> b36458b (add `IntervalMatrixIterator`)
 
         if array == None:
             self.array = self.get_empty_matrix(n, m)
         else:
             # TODO : check it has the right dimensions for every column and row
             self.array = array
+<<<<<<< HEAD
+=======
+
+    def __getitem__(self, index):
+        return self.array[index[0]][index[1]]
+
+    def __setitem__(self, index, value):
+        self.array[index[0]][index[1]] = value
+
+    def __iter__(self):
+        return IntervalMatrixIterator(self)
+>>>>>>> b36458b (add `IntervalMatrixIterator`)
 
 <<<<<<< HEAD
     def __getitem__(self, index):
@@ -70,9 +111,12 @@ class IntervalMatrix():
 
     def set_element(self, i, j, value):
         self.array[i][j] = value
+<<<<<<< HEAD
 
     def get_dimension(self):
         return (self.dim_row, self.dim_col)
+=======
+>>>>>>> b36458b (add `IntervalMatrixIterator`)
 
     def get_dimension(self):
         return (self.dim_row, self.dim_col)
@@ -271,10 +315,15 @@ class IntervalMatrix():
 
     @staticmethod
 <<<<<<< HEAD
+<<<<<<< HEAD
     def matrix_multiply_square(A, B, n):
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+=======
+    def matrix_multiply_square(A, B, n):
+
+>>>>>>> b36458b (add `IntervalMatrixIterator`)
         return None
 
     def matrix_multiply_square_sym(A, B, n):
@@ -302,11 +351,14 @@ class IntervalMatrix():
     def empty_matrix(m, n):
         array = [[P.empty() for j in range(n)] for i in range(m)]
         return IntervalMatrix(n, n, matarrayrix)
+<<<<<<< HEAD
 
 =======
     def empty_matrix(n):
         matrix = [[P.empty() for j in range(m)] for i in range(n)]
         return IntervalMatrix(n, n, matrix)
+=======
+>>>>>>> b36458b (add `IntervalMatrixIterator`)
 
 >>>>>>> c4a59cb (Added static methods to `IntervalMatrix`)
     @staticmethod
@@ -316,13 +368,17 @@ class IntervalMatrix():
             and emptyset everywhere else. 
         """
 <<<<<<< HEAD
+<<<<<<< HEAD
         array = [[P.empty() for j in range(n)] for i in range(n)]
         for i in range(n):
             array[i][i] = P.open(-P.inf, P.inf)
 =======
         matrix = [[P.empty() for j in range(n)] for i in range(n)]
+=======
+        array = [[P.empty() for j in range(n)] for i in range(n)]
+>>>>>>> b36458b (add `IntervalMatrixIterator`)
         for i in range(n):
-            matrix[i][i] = P.open(-P.inf, P.inf)
+            array[i][i] = P.open(-P.inf, P.inf)
 
 >>>>>>> c4a59cb (Added static methods to `IntervalMatrix`)
         return IntervalMatrix(n, n, matrix) 
@@ -332,6 +388,7 @@ class IntervalMatrix():
         """
         Returns an `n` square matrix with [-infty, infty] in each entry.
         """
+<<<<<<< HEAD
 <<<<<<< HEAD
         array = [[P.closed(-P.inf, P.inf) for j in range(n)] for i in range(n)]
 
@@ -360,6 +417,11 @@ def get_average_contact_matrix(mat):
 
         return IntervalMatrix(n, n, matrix)
 >>>>>>> c4a59cb (Added static methods to `IntervalMatrix`)
+=======
+        array = [[P.closed(-P.inf, P.inf) for j in range(n)] for i in range(n)]
+
+        return IntervalMatrix(n, n, array)
+>>>>>>> b36458b (add `IntervalMatrixIterator`)
 
 if __name__ == "__main__":
     matrix = IntervalMatrix(3, 3)
@@ -413,6 +475,10 @@ if __name__ == "__main__":
     #print(matrix.is_symmetric())
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+    #print(matrix**1)
+>>>>>>> b36458b (add `IntervalMatrixIterator`)
 
     print(matrix**1)
 
@@ -423,6 +489,9 @@ if __name__ == "__main__":
     M2 = matrix + (matrix * matrix)
     for index, entry in enumerate(M2):
         print(f"({index // m}, {index % n}) : {entry}")
+<<<<<<< HEAD
 =======
     #print(matrix**1)
 >>>>>>> cb4f5e2 (Added average contact matrix function)
+=======
+>>>>>>> b36458b (add `IntervalMatrixIterator`)
