@@ -2,7 +2,6 @@ import portion as P
 import contact_analysis as ca
 import interval_distance_functions as idf
 
-
 class IntervalMatrixIterator():
 
     def __init__(self, matrix):
@@ -27,6 +26,7 @@ class IntervalMatrixIterator():
         return result
 
 # TODO : add iterate upper
+
 
 class IntervalMatrix():
 
@@ -102,7 +102,6 @@ class IntervalMatrix():
             curr_walk = self.array * curr_walk
             temp = temp + curr_walk
         return temp
-
 
     def get_max_endpoint(self, include_infinity=True):
         if self.max != None:
@@ -305,9 +304,6 @@ def get_average_contact_matrix(mat):
             A[k][j] = ((maximum - minimum) - idf.xor_distance(mat.get_element(k, j), P.open(minimum, maximum)))/(maximum-minimum)
     return A
 
-
-
-
 if __name__ == "__main__":
     matrix = IntervalMatrix(3, 3)
     #print(matrix)
@@ -326,7 +322,6 @@ if __name__ == "__main__":
     ]
     # matrix = IntervalMatrix(4, 4, matrix_raw)
     matrix = IntervalMatrix(4, 4, matrix_raw_sym)
-
 
     print("Row: {}. Col: {}".format(matrix.dim_row, matrix.dim_col))
 
@@ -364,3 +359,28 @@ if __name__ == "__main__":
     for index, entry in enumerate(M2):
         print(f"({index // m}, {index % n}) : {entry}")
 
+
+    #print(matrix)
+    #print(matrix.get_max_endpoint())
+    #print(matrix.get_min_endpoint())
+
+    #print(get_average_contact_matrix(matrix))
+
+    for k in range(0, 10, 1):
+        j = (float)(k/10)
+        filt = average_contact_filtration(matrix, j)
+        print(imac.A_star(filt.matrix))
+
+    print(average_contact_filtration(matrix, .2))
+
+    #print("M")
+    #print(matrix)
+    #print("M^2")
+    #print(matrix + (matrix * matrix))
+    #print("M^3")
+    #print(matrix + (matrix * matrix) + matrix * matrix * matrix)
+    #print("A^3")
+    #print(matrix )
+    #print(matrix.is_symmetric())
+
+    #print(matrix**1)
