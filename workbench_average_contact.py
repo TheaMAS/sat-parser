@@ -66,7 +66,6 @@ def average_contact_filtration(A, t):
     return ret
 
 
-<<<<<<< HEAD
 def test_1():
     print("Test 1")
     M = IntervalMatrix(4, 4)
@@ -169,91 +168,3 @@ if __name__ == "__main__":
     '''
     matrix = IntervalMatrix(3, 3)
     #print(matrix)
-    
-<<<<<<< HEAD
-=======
-if __name__ == "__main__":
-    #file = 'outputs/moongnd-8/starlink_15_sats_0 Contact Analysis.csv'
-    file = 'outputs/moongnd-8/starlink_0 Contact Analysis.csv'
-    A = fp.soap_converter(file)
-
-    matrix = IntervalMatrix(3, 3)
-    #print(matrix)
-
->>>>>>> 27106d4 (Current work on calculating persistence)
-=======
-
->>>>>>> f4d7dda (Current work on calculating persistence)
-    matrix_raw = [
-        [P.open(-P.inf,P.inf), P.closed(0, 6), P.closed(6, 10), P.empty()],
-        [P.empty(), P.open(-P.inf,P.inf), P.closed(1, 4), P.closed(3, 7)],
-        [P.empty(), P.empty(), P.open(-P.inf,P.inf), P.closed(0, 8)],
-        [P.empty(), P.empty(), P.empty(), P.open(-P.inf,P.inf)]
-    ]
-    matrix_raw_sym = [
-        [P.open(0,20), P.closed(0, 6), P.closed(6, 10), P.empty()],
-        [P.closed(0, 6), P.open(0, 20), P.closed(1, 4), P.closed(3, 7)],
-        [P.closed(6, 10), P.closed(1, 4), P.open(0, 20), P.closed(0, 8)],
-        [P.empty(), P.closed(3, 7), P.closed(0, 8), P.open(0, 20)]
-    ]
-    # matrix = IntervalMatrix(4, 4, matrix_raw)
-    matrix = IntervalMatrix(4, 4, matrix_raw_sym)
-
-<<<<<<< HEAD
-<<<<<<< HEAD
-    
-=======
->>>>>>> 27106d4 (Current work on calculating persistence)
-=======
->>>>>>> f4d7dda (Current work on calculating persistence)
-    #print(matrix)
-    #print(matrix.get_max_endpoint())
-    #print(matrix.get_min_endpoint())
-
-    #print(get_average_contact_matrix(matrix))
-<<<<<<< HEAD
-    '''
-
-
-    #Random example
-    '''
-    #file = 'outputs/moongnd-8/starlink_15_sats_0 Contact Analysis.csv'
-    file = 'outputs/moongnd-8/starlink_0 Contact Analysis.csv'
-    A = fp.soap_converter(file)
-<<<<<<< HEAD
-=======
-
-    #print(A)
-
->>>>>>> 27106d4 (Current work on calculating persistence)
-=======
-
->>>>>>> f4d7dda (Current work on calculating persistence)
-    filt = average_contact_filtration(A, .99)
-    print("Average Contact Filtration, t = .99")
-    #print(filt)
-    print("Converted to weighted simplex from matrix:")
-    simp = construct_weighted_simplex_from_matrix(filt)
-    #print(simp)
-    zz, dgms, cells = z.calculate_zz_persistence(simp)
-
-    number_of_plots = len(dgms)
-    #fig, axs = plt.subplots(2, 1)
-
-    for i, k in enumerate(dgms):
-        d.plot.plot_diagram(k, show = True)
-    #for k in range(0, 10, 1):
-    #    j = (float)(k/10)
-    #    filt = average_contact_filtration(A, j)
-    #    print(imac.A_star(filt.matrix))
-
-<<<<<<< HEAD
-<<<<<<< HEAD
-    #print(average_contact_filtration(A, .2))
-    '''
-
-=======
-    #print(average_contact_filtration(A, .2))
->>>>>>> 27106d4 (Current work on calculating persistence)
-=======
->>>>>>> f4d7dda (Current work on calculating persistence)

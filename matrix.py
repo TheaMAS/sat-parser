@@ -1,34 +1,7 @@
 import portion as P
 import contact_analysis as ca
 import interval_distance_functions as idf
-<<<<<<< HEAD
 
-class IntervalMatrixIterator():
-
-    def __init__(self, matrix):
-        self.matrix = matrix
-        self.index = (0, 0)
-
-    def __next__(self):
-
-        m = self.matrix.dim_row
-        n = self.matrix.dim_col
-
-        if self.index[0] == m:
-            raise StopIteration()
-
-        result = self.matrix[self.index]
-
-        if self.index[1] + 1 == n:
-            self.index = (self.index[0] + 1, 0)
-        else: 
-            self.index = (self.index[0], self.index[1] + 1)
-
-        return result
-
-# TODO : add iterate upper
-=======
->>>>>>> cb4f5e2 (Added average contact matrix function)
 
 class IntervalMatrixIterator():
 
@@ -62,22 +35,14 @@ class IntervalMatrix():
         self.dim_col = m
         self.max = None
         self.min = None
-<<<<<<< HEAD
-<<<<<<< HEAD
         self.symmetric = symmetric
-=======
->>>>>>> 83b4cb4 (Added max endpoint method to matrix class)
-=======
-        self.symmetric = symmetric
->>>>>>> b36458b (add `IntervalMatrixIterator`)
 
         if array == None:
             self.array = self.get_empty_matrix(n, m)
         else:
             # TODO : check it has the right dimensions for every column and row
             self.array = array
-<<<<<<< HEAD
-=======
+
 
     def __getitem__(self, index):
         return self.array[index[0]][index[1]]
@@ -87,20 +52,7 @@ class IntervalMatrix():
 
     def __iter__(self):
         return IntervalMatrixIterator(self)
->>>>>>> b36458b (add `IntervalMatrixIterator`)
 
-<<<<<<< HEAD
-    def __getitem__(self, index):
-        return self.array[index[0]][index[1]]
-
-    def __setitem__(self, index, value):
-        self.array[index[0]][index[1]] = value
-
-    def __iter__(self):
-        return IntervalMatrixIterator(self)
-
-=======
->>>>>>> c4a59cb (Added static methods to `IntervalMatrix`)
     # TODO : delete; moved below into @staticmethod
     def get_empty_matrix(self, n, m):
         return [[P.empty() for j in range(m)] for i in range(n)]
@@ -111,12 +63,9 @@ class IntervalMatrix():
 
     def set_element(self, i, j, value):
         self.array[i][j] = value
-<<<<<<< HEAD
 
     def get_dimension(self):
         return (self.dim_row, self.dim_col)
-=======
->>>>>>> b36458b (add `IntervalMatrixIterator`)
 
     def is_symmetric(self):
         if self.dim_row != self.dim_col:
@@ -154,26 +103,8 @@ class IntervalMatrix():
             temp = temp + curr_walk
         return temp
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-    def get_max_endpoint(self, include_infinity=True):
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-    def get_max_endpoint():
->>>>>>> 83b4cb4 (Added max endpoint method to matrix class)
-=======
-    def get_max_endpoint(self):
->>>>>>> cb4f5e2 (Added average contact matrix function)
-=======
-    def get_max_endpoint(self, include_infinity=True):
->>>>>>> 27106d4 (Current work on calculating persistence)
-=======
 
->>>>>>> 4cf830b (Added average contact matrix function)
-=======
->>>>>>> f4d7dda (Current work on calculating persistence)
+    def get_max_endpoint(self, include_infinity=True):
         if self.max != None:
             return self.max
         else:
@@ -187,16 +118,11 @@ class IntervalMatrix():
                             temp = dat[0][2]
                         else:
                             temp = max(temp, dat[0][2])
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 27106d4 (Current work on calculating persistence)
                     if include_infinity == False and temp != float('inf') or include_infinity == True:
                         if ret == None:
                             ret = temp
                         elif temp != None:
                             ret = max(ret, temp)
-<<<<<<< HEAD
             return ret
 
     def get_min_endpoint(self, include_infinity=True):
@@ -222,15 +148,6 @@ class IntervalMatrix():
 
     def get_slice(self, window_interval):
         pass
-<<<<<<< HEAD
-=======
-                    if ret == None:
-                        ret = temp
-                    elif temp != None:
-                        ret = max(ret, temp)
-=======
->>>>>>> 27106d4 (Current work on calculating persistence)
-            return ret
 
     def get_min_endpoint(self, include_infinity=True):
         if self.min != None:
@@ -252,10 +169,6 @@ class IntervalMatrix():
                         elif temp != None:
                             ret = min(ret, temp)
             return ret
-
->>>>>>> 83b4cb4 (Added max endpoint method to matrix class)
-=======
->>>>>>> b90d999 (Added passes to unimplemented functions)
 
     def __add__(self, im):
         if self.dim_row != im.dim_row or self.dim_col != im.dim_col:
@@ -321,20 +234,11 @@ class IntervalMatrix():
         return "\n".join(strings)
 
     @staticmethod
-<<<<<<< HEAD
-<<<<<<< HEAD
-    def matrix_multiply_square(A, B, n):
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
     def matrix_multiply_square(A, B, n):
-
->>>>>>> b36458b (add `IntervalMatrixIterator`)
         return None
 
     def matrix_multiply_square_sym(A, B, n):
-
         return None 
 
     def matrix_multiply(A, B):
@@ -357,40 +261,23 @@ class IntervalMatrix():
     @staticmethod
     def empty_matrix(m, n):
         array = [[P.empty() for j in range(n)] for i in range(m)]
-        return IntervalMatrix(n, n, matarrayrix)
-<<<<<<< HEAD
-
-=======
+        return IntervalMatrix(n, n, array)
+'''
     def empty_matrix(n):
         matrix = [[P.empty() for j in range(m)] for i in range(n)]
         return IntervalMatrix(n, n, matrix)
-=======
->>>>>>> b36458b (add `IntervalMatrixIterator`)
+'''
 
->>>>>>> c4a59cb (Added static methods to `IntervalMatrix`)
     @staticmethod
     def identity_matrix(n):
         """
         Returns an `n` square matrix with [-infty, infty] along the diagonal,
             and emptyset everywhere else. 
         """
-<<<<<<< HEAD
-<<<<<<< HEAD
         array = [[P.empty() for j in range(n)] for i in range(n)]
-        for i in range(n):
-            array[i][i] = P.open(-P.inf, P.inf)
-<<<<<<< HEAD
-=======
-        matrix = [[P.empty() for j in range(n)] for i in range(n)]
-=======
-        array = [[P.empty() for j in range(n)] for i in range(n)]
->>>>>>> b36458b (add `IntervalMatrixIterator`)
         for i in range(n):
             array[i][i] = P.open(-P.inf, P.inf)
 
->>>>>>> c4a59cb (Added static methods to `IntervalMatrix`)
-=======
->>>>>>> 2e3f043 (0004 Continued refactoring of visualization code)
         return IntervalMatrix(n, n, matrix) 
 
     @staticmethod
@@ -398,53 +285,29 @@ class IntervalMatrix():
         """
         Returns an `n` square matrix with [-infty, infty] in each entry.
         """
-<<<<<<< HEAD
-<<<<<<< HEAD
         array = [[P.closed(-P.inf, P.inf) for j in range(n)] for i in range(n)]
 
         return IntervalMatrix(n, n, array)
 
-<<<<<<< HEAD
-<<<<<<< HEAD
+
     def empty_matrix(n):
         matrix = [[P.empty() for j in range(m)] for i in range(n)]
         return IntervalMatrix(n, n, matrix)
 
-=======
-=======
->>>>>>> 4cf830b (Added average contact matrix function)
+
 def get_average_contact_matrix(mat):
     minimum = mat.get_min_endpoint()
     maximum = mat.get_max_endpoint()
 
-<<<<<<< HEAD
     A = [[None for j in range(mat.dim_col)] for i in range(mat.dim_row)]
     for k in range(len(A)):
         for j in range(len(A[0])):
             A[k][j] = ((maximum - minimum) - idf.xor_distance(mat.get_element(k, j), P.open(minimum, maximum)))/(maximum-minimum)
-
     return A
-<<<<<<< HEAD
->>>>>>> cb4f5e2 (Added average contact matrix function)
-=======
->>>>>>> 27106d4 (Current work on calculating persistence)
-=======
-        matrix = [[P.closed(-P.inf, P.inf) for j in range(n)] for i in range(n)]
 
-        return IntervalMatrix(n, n, matrix)
->>>>>>> c4a59cb (Added static methods to `IntervalMatrix`)
-=======
-        array = [[P.closed(-P.inf, P.inf) for j in range(n)] for i in range(n)]
 
-        return IntervalMatrix(n, n, array)
->>>>>>> b36458b (add `IntervalMatrixIterator`)
-=======
->>>>>>> 4cf830b (Added average contact matrix function)
-=======
->>>>>>> f4d7dda (Current work on calculating persistence)
 
-=======
->>>>>>> eeca608 (add `IntervalMatrixIterator`)
+
 if __name__ == "__main__":
     matrix = IntervalMatrix(3, 3)
     #print(matrix)
@@ -464,21 +327,9 @@ if __name__ == "__main__":
     # matrix = IntervalMatrix(4, 4, matrix_raw)
     matrix = IntervalMatrix(4, 4, matrix_raw_sym)
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 
     print("Row: {}. Col: {}".format(matrix.dim_row, matrix.dim_col))
-=======
-    #print(matrix)
-    #print(matrix.get_max_endpoint())
-    #print(matrix.get_min_endpoint())
-=======
->>>>>>> a2b9ac1 (0004 Continued refactoring of visualization code)
 
-
-=======
->>>>>>> f4d7dda (Current work on calculating persistence)
     for k in range(0, 10, 1):
         j = (float)(k/10)
         filt = average_contact_filtration(matrix, j)
@@ -486,16 +337,11 @@ if __name__ == "__main__":
 
     print(average_contact_filtration(matrix, .2))
 
-<<<<<<< HEAD
-<<<<<<< HEAD
+
     print(get_average_contact_matrix(matrix))
->>>>>>> cb4f5e2 (Added average contact matrix function)
-=======
->>>>>>> 27106d4 (Current work on calculating persistence)
-=======
+
 
     print("Row: {}. Col: {}".format(matrix.dim_row, matrix.dim_col))
->>>>>>> 2e3f043 (0004 Continued refactoring of visualization code)
     #print("M")
     #print(matrix)
     #print("M^2")
@@ -506,15 +352,7 @@ if __name__ == "__main__":
     #print(matrix )
     #print(matrix.is_symmetric())
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-    #print(matrix**1)
->>>>>>> b36458b (add `IntervalMatrixIterator`)
-=======
 
->>>>>>> 2e3f043 (0004 Continued refactoring of visualization code)
 
     print(matrix**1)
 
@@ -525,13 +363,4 @@ if __name__ == "__main__":
     M2 = matrix + (matrix * matrix)
     for index, entry in enumerate(M2):
         print(f"({index // m}, {index % n}) : {entry}")
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-    #print(matrix**1)
->>>>>>> cb4f5e2 (Added average contact matrix function)
-=======
->>>>>>> b36458b (add `IntervalMatrixIterator`)
-=======
 
->>>>>>> f4d7dda (Current work on calculating persistence)

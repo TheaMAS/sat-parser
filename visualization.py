@@ -12,10 +12,6 @@ from matrix import IntervalMatrix
 import portion as P
 
 
-
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 def save_figure(plot_context, filename):
     fig = plot_context[0]
     ax = plot_context[1]
@@ -28,39 +24,9 @@ def display_figure(plot_context):
     plt.show()
     return plot_context
 
-<<<<<<< HEAD
-=======
-def save_figure(plt, ax, filename):
-=======
-def save_figure(fig, ax, filename):
->>>>>>> b90d999 (Added passes to unimplemented functions)
-=======
-def save_figure(plot_context, filename):
-    fig = plot_context[0]
-    ax = plot_context[1]
->>>>>>> a2b9ac1 (0004 Continued refactoring of visualization code)
-    plt.savefig(str(filename))
-    return plot_context
-
-<<<<<<< HEAD
-def display_figure(fig, ax):
-    pass
->>>>>>> 38ae1c9 (0004: Initial stage of refactoring; adding warnings)
-=======
-def display_figure(plot_context):
-    fig = plot_context[0]
-    ax = plot_context[1]
-    plt.show()
-    return plot_context
->>>>>>> a2b9ac1 (0004 Continued refactoring of visualization code)
-=======
->>>>>>> 336d66e (0004: Initial stage of refactoring; adding warnings)
 
 def contact_graph(input_matrix):
     # Takes an IntervalMatrix and returns the 3d graph of the contact intervals
-
-<<<<<<< HEAD
-<<<<<<< HEAD
     max_i = input_matrix.dim_row
     max_j = input_matrix.dim_col
     fig = plt.figure(figsize=(8,5))
@@ -68,24 +34,6 @@ def contact_graph(input_matrix):
     full_contacts = []
     #temp = M.matrix
     full_contacts.append(input_matrix.matrix)
-=======
-    max_i = len(M.matrix)
-    max_j = len(M.matrix[0])
-    fig = plt.figure(figsize=(8,5))
-    ax = plt.axes(projection='3d')
-    full_contacts = []
-    temp = M.matrix
-    full_contacts.append(M.matrix)
->>>>>>> 38ae1c9 (0004: Initial stage of refactoring; adding warnings)
-=======
-    max_i = input_matrix.dim_row
-    max_j = input_matrix.dim_col
-    fig = plt.figure(figsize=(8,5))
-    ax = plt.axes(projection='3d')
-    full_contacts = []
-    #temp = M.matrix
-    full_contacts.append(input_matrix.matrix)
->>>>>>> a2b9ac1 (0004 Continued refactoring of visualization code)
 
     int_min = 0
     int_max = 10
@@ -99,19 +47,8 @@ def contact_graph(input_matrix):
                 if int_min > pt[1] and pt[1] >= 0 and pt[1] != -float('inf'):
                     int_min = pt[1]
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-    x_vals, y_vals= [], []
-
-<<<<<<< HEAD
-=======
     x_vals, y_vals= [],[]
->>>>>>> 38ae1c9 (0004: Initial stage of refactoring; adding warnings)
-=======
-    x_vals, y_vals= [], []
->>>>>>> b90d999 (Added passes to unimplemented functions)
-=======
->>>>>>> 336d66e (0004: Initial stage of refactoring; adding warnings)
+
     z_tops = []
     z_bottoms = []
     for i in range(max_i):
@@ -130,41 +67,11 @@ def contact_graph(input_matrix):
     return fig, ax
 
 if __name__ == '__main__':
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> a2b9ac1 (0004 Continued refactoring of visualization code)
-
     A = [[P.open(-P.inf,P.inf),P.open(.8,2)|P.open(10,12),P.open(0,1)|P.open(2,5)], [P.open(.8,2)|P.open(10,12),P.open(-P.inf,P.inf),P.open(.5,1)|P.open(3,4)], [P.open(0,1)|P.open(2,4),P.open(0,1)|P.open(3,4),P.open(-P.inf,P.inf)]]
     A = IntervalMatrix(3, 3, A)
     x = contact_graph(A)
     print("Our contact graph is {}".format(x))
     #save_figure(x, "practice")
     display_figure(x)
-<<<<<<< HEAD
-=======
-    
->>>>>>> 38ae1c9 (0004: Initial stage of refactoring; adding warnings)
-
-=======
-    pass
->>>>>>> b90d999 (Added passes to unimplemented functions)
-=======
-
-<<<<<<< HEAD
 
 
-
-<<<<<<< HEAD
-
-
-
-
-
-
->>>>>>> a2b9ac1 (0004 Continued refactoring of visualization code)
-=======
->>>>>>> 336d66e (0004: Initial stage of refactoring; adding warnings)
-=======
->>>>>>> 2e3f043 (0004 Continued refactoring of visualization code)
