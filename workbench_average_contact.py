@@ -66,14 +66,109 @@ def average_contact_filtration(A, t):
     return ret
 
 
-if __name__ == "__main__":
-    #file = 'outputs/moongnd-8/starlink_15_sats_0 Contact Analysis.csv'
-    file = 'outputs/moongnd-8/starlink_0 Contact Analysis.csv'
-    A = fp.soap_converter(file)
+def test_1():
+    print("Test 1")
+    M = IntervalMatrix(4, 4)
+    for i in range(0,4):
+        M.set_element(i, i, P.open(0, 25))
+    filt = average_contact_filtration(M, .3)
+    simp = construct_weighted_simplex_from_matrix(filt)
+    zz, dgms, cells = z.calculate_zz_persistence(simp)
+    print(M)
+    print(zz)
+    for i, k in enumerate(dgms):
+        print("{}: {}".format(i, k))
+    for i, k in enumerate(dgms):
+        d.plot.plot_diagram(k, show=False)
+    print("")
 
+
+def test_2():
+    print("Test 2")
+    M = IntervalMatrix(4, 4)
+    for i in range(0,4):
+        M.set_element(i, i, P.open(0, 25))
+    M.set_element(0,1, P.open(10, 15))
+    filt = average_contact_filtration(M, .3)
+    simp = construct_weighted_simplex_from_matrix(filt)
+    zz, dgms, cells = z.calculate_zz_persistence(simp)
+    print(M)
+    print(zz)
+    for i, k in enumerate(dgms):
+        print("{}: {}".format(i, k))
+    for i, k in enumerate(dgms):
+        d.plot.plot_diagram(k, show=False)
+    print("")
+
+def test_3():
+    print("Test 3")
+    M = IntervalMatrix(4, 4)
+    for i in range(0,4):
+        M.set_element(i, i, P.open(0, 25))
+    M.set_element(0, 1, P.open(0, 10))
+    M.set_element(1, 0, P.open(0, 10))
+    M.set_element(1, 2, P.open(0, 10))
+    M.set_element(2, 1, P.open(0, 10))
+    M.set_element(2, 3, P.open(0, 10))
+    M.set_element(3, 2, P.open(0, 10))
+    M.set_element(3, 0, P.open(0, 10))
+    M.set_element(0, 3, P.open(0, 10))
+    filt = average_contact_filtration(M, .3)
+    simp = construct_weighted_simplex_from_matrix(filt)
+    zz, dgms, cells = z.calculate_zz_persistence(simp)
+    print(M)
+    print(zz)
+    for i, k in enumerate(dgms):
+        print("{}: {}".format(i, k))
+    for i, k in enumerate(dgms):
+        d.plot.plot_diagram(k, show=False)
+    print("")
+
+def test_4():
+    print("Test 4")
+    M = IntervalMatrix(4, 4)
+    for i in range(0,4):
+        M.set_element(i, i, P.open(0, 25))
+    M.set_element(0, 1, P.open(0, 10))
+    M.set_element(1, 2, P.open(0, 10))
+    M.set_element(2, 3, P.open(0, 10))
+    M.set_element(0, 3, P.open(0, 10))
+    filt = average_contact_filtration(M, .3)
+    simp = construct_weighted_simplex_from_matrix(filt)
+    zz, dgms, cells = z.calculate_zz_persistence(simp)
+    print(M)
+    print(zz)
+    for i, k in enumerate(dgms):
+        print("{}: {}".format(i, k))
+    for i, k in enumerate(dgms):
+        d.plot.plot_diagram(k, show=True)
+    print("")
+
+
+if __name__ == "__main__":
+
+    M = IntervalMatrix(4, 4)
+    for i in range(0,4):
+        M.set_element(i, i, P.open(0, 25))
+    '''M.set_element(0, 1, P.open(0,10))
+    M.set_element(1, 0, P.open(0,10))
+    M.set_element(1, 2, P.open(5, 15))
+    M.set_element(2, 1, P.open(5, 15))
+    M.set_element(2, 3, P.open(10, 20))
+    M.set_element(3, 2, P.open(10, 20))
+    M.set_element(3, 0, P.open(15, 25))
+    M.set_element(0, 3, P.open(15, 25))
+    print(M)'''
+
+    test_1()
+    test_2()
+    test_3()
+    test_4()
+
+    '''
     matrix = IntervalMatrix(3, 3)
     #print(matrix)
-
+    
     matrix_raw = [
         [P.open(-P.inf,P.inf), P.closed(0, 6), P.closed(6, 10), P.empty()],
         [P.empty(), P.open(-P.inf,P.inf), P.closed(1, 4), P.closed(3, 7)],
@@ -89,14 +184,20 @@ if __name__ == "__main__":
     # matrix = IntervalMatrix(4, 4, matrix_raw)
     matrix = IntervalMatrix(4, 4, matrix_raw_sym)
 
+    
     #print(matrix)
     #print(matrix.get_max_endpoint())
     #print(matrix.get_min_endpoint())
 
     #print(get_average_contact_matrix(matrix))
+    '''
 
-    #print(A)
 
+    #Random example
+    '''
+    #file = 'outputs/moongnd-8/starlink_15_sats_0 Contact Analysis.csv'
+    file = 'outputs/moongnd-8/starlink_0 Contact Analysis.csv'
+    A = fp.soap_converter(file)
     filt = average_contact_filtration(A, .99)
     print("Average Contact Filtration, t = .99")
     #print(filt)
@@ -116,3 +217,5 @@ if __name__ == "__main__":
     #    print(imac.A_star(filt.matrix))
 
     #print(average_contact_filtration(A, .2))
+    '''
+
