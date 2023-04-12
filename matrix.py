@@ -64,6 +64,9 @@ class IntervalMatrix():
     def get_dimension(self):
         return (self.dim_row, self.dim_col)
 
+    def get_dimension(self):
+        return (self.dim_row, self.dim_col)
+
     def is_symmetric(self):
         if self.dim_row != self.dim_col:
             return False
@@ -258,6 +261,30 @@ class IntervalMatrix():
 
         return IntervalMatrix(n, n, array)
 
+    def empty_matrix(n):
+        matrix = [[P.empty() for j in range(m)] for i in range(n)]
+        return IntervalMatrix(n, n, matrix)
+
+
+    @staticmethod
+    def identity_matrix(n):
+        """
+        Returns an `n` square matrix with [-infty, infty] along the diagonal,
+            and emptyset everywhere else. 
+        """
+        matrix = [[P.empty() for j in range(n)] for i in range(n)]
+        for i in range(n):
+            matrix[i][i] = P.open(-P.inf, P.inf)
+        return IntervalMatrix(n, n, matrix) 
+
+    @staticmethod
+    def complete_matrix(n):
+        """
+        Returns an `n` square matrix with [-infty, infty] in each entry.
+        """
+        matrix = [[P.closed(-P.inf, P.inf) for j in range(n)] for i in range(n)]
+
+        return IntervalMatrix(n, n, matrix)
 
 if __name__ == "__main__":
     matrix = IntervalMatrix(3, 3)
