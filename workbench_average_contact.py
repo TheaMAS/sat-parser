@@ -144,6 +144,24 @@ def test_4():
         d.plot.plot_diagram(k, show=True)
     print("")
 
+def test_5():
+    #file = 'outputs/moongnd-8/starlink_15_sats_0 Contact Analysis.csv'
+    file = 'outputs/moongnd-8/starlink_0 Contact Analysis.csv'
+    A = fp.soap_converter(file)
+    filt = average_contact_filtration(A, 1)
+    print("Average Contact Filtration, t = .99")
+    #print(filt)
+    print("Converted to weighted simplex from matrix:")
+    simp = construct_weighted_simplex_from_matrix(filt)
+    #print(simp)
+    zz, dgms, cells = z.calculate_zz_persistence(simp)
+
+    number_of_plots = len(dgms)
+    #fig, axs = plt.subplots(2, 1)
+
+    for i, k in enumerate(dgms):
+        d.plot.plot_diagram(k, show = True)
+
 
 if __name__ == "__main__":
 
@@ -163,8 +181,8 @@ if __name__ == "__main__":
     #test_1()
     #test_2()
     #test_3()
-    test_4()
-
+    #test_4()
+    test_5()
     '''
     matrix = IntervalMatrix(3, 3)
     #print(matrix)
@@ -194,27 +212,12 @@ if __name__ == "__main__":
 
 
     #Random example
-    '''
-    #file = 'outputs/moongnd-8/starlink_15_sats_0 Contact Analysis.csv'
-    file = 'outputs/moongnd-8/starlink_0 Contact Analysis.csv'
-    A = fp.soap_converter(file)
-    filt = average_contact_filtration(A, .99)
-    print("Average Contact Filtration, t = .99")
-    #print(filt)
-    print("Converted to weighted simplex from matrix:")
-    simp = construct_weighted_simplex_from_matrix(filt)
-    #print(simp)
-    zz, dgms, cells = z.calculate_zz_persistence(simp)
+    
 
-    number_of_plots = len(dgms)
-    #fig, axs = plt.subplots(2, 1)
-
-    for i, k in enumerate(dgms):
-        d.plot.plot_diagram(k, show = True)
     #for k in range(0, 10, 1):
     #    j = (float)(k/10)
     #    filt = average_contact_filtration(A, j)
     #    print(imac.A_star(filt.matrix))
 
     #print(average_contact_filtration(A, .2))
-    '''
+    
