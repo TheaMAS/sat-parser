@@ -130,7 +130,7 @@ class IntervalMatrix():
             return self.max
         else:
             ret = None
-            for x in self.matrix:
+            for x in self.array:
                 for y in x:
                     temp = None
                     for interval in y:
@@ -151,7 +151,7 @@ class IntervalMatrix():
             return self.min
         else:
             ret = None
-            for x in self.matrix:
+            for x in self.array:
                 for y in x:
                     temp = None
                     for interval in y:
@@ -169,27 +169,6 @@ class IntervalMatrix():
 
     def get_slice(self, window_interval):
         pass
-
-    def get_min_endpoint(self, include_infinity=True):
-        if self.min != None:
-            return self.min
-        else:
-            ret = None
-            for x in self.matrix:
-                for y in x:
-                    temp = None
-                    for interval in y:
-                        dat = P.to_data(interval)
-                        if temp == None:
-                            temp = dat[0][1]
-                        else:
-                            temp = min(temp, dat[0][1])
-                    if include_infinity == False and temp != float('-inf') or include_infinity == True:
-                        if ret == None:
-                            ret = temp
-                        elif temp != None:
-                            ret = min(ret, temp)
-            return ret
 
     def __add__(self, im):
         if self.dim_row != im.dim_row or self.dim_col != im.dim_col:

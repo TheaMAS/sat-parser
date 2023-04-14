@@ -128,11 +128,11 @@ def test_4():
     print("Test 4")
     M = IntervalMatrix(4, 4)
     for i in range(0,4):
-        M.set_element(i, i, P.open(0, 25))
-    M.set_element(0, 1, P.open(0, 10))
-    M.set_element(1, 2, P.open(0, 10))
-    M.set_element(2, 3, P.open(0, 10))
-    M.set_element(0, 3, P.open(0, 10))
+        M[i, i] = P.open(0, 25)
+    M[0, 1] = P.open(0, 10)
+    M[1, 2] = P.open(0, 10)
+    M[2, 3] = P.open(0, 10)
+    M[0, 3] =  P.open(0, 10)
     filt = average_contact_filtration(M, .3)
     simp = construct_weighted_simplex_from_matrix(filt)
     zz, dgms, cells = z.calculate_zz_persistence(simp)
@@ -160,9 +160,9 @@ if __name__ == "__main__":
     M.set_element(0, 3, P.open(15, 25))
     print(M)'''
 
-    test_1()
-    test_2()
-    test_3()
+    #test_1()
+    #test_2()
+    #test_3()
     test_4()
 
     '''
