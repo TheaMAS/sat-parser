@@ -1,0 +1,103 @@
+DEFINE SENSOR  "Visibility"
+	CS  ".Earth Cartesian"
+	TYPE NORMAL
+	SHAPE SPHERICAL
+	TERM_EL 0 
+	HOST_SUN_CONSTRAINT NONE
+	TARGET_SUN_CONSTRAINT NONE
+	HOSTLIST "OFF"
+     ".Earth CI Observer"
+     ".Earth CR Observer"
+     ".Earth Ground"
+     ".Earth Ground Local"
+     ".Earth Ground Observer"
+     ".Earth Ground Relative"
+     ".Earth Polar Observer"
+     ".Ecliptic Observer"
+     ".Mars CI Observer"
+     ".Mars CR Observer"
+     ".Mercury CI Observer"
+     ".Mercury CR Observer"
+     ".Moon CI Observer"
+     ".Moon CR Observer"
+     ".SSB"
+     ".Venus CI Observer"
+     ".Venus CR Observer"
+     "Earth"
+     "EarthB"
+     "JupiterB"
+     "Mars"
+     "MarsB"
+     "Mercury"
+     "MercuryB"
+     "Moon"
+     "NeptuneB"
+     "PlutoB"
+     "SaturnB"
+     "Sun"
+     "UranusB"
+     "Venus"
+     "VenusB"
+     "END_OF_INPUT"
+	TARGLIST "OFF"
+     ".Earth CI Observer"
+     ".Earth CR Observer"
+     ".Earth Ground"
+     ".Earth Ground Local"
+     ".Earth Ground Observer"
+     ".Earth Ground Relative"
+     ".Earth Polar Observer"
+     ".Ecliptic Observer"
+     ".Mars CI Observer"
+     ".Mars CR Observer"
+     ".Mercury CI Observer"
+     ".Mercury CR Observer"
+     ".Moon CI Observer"
+     ".Moon CR Observer"
+     ".SSB"
+     ".Venus CI Observer"
+     ".Venus CR Observer"
+     "Earth"
+     "EarthB"
+     "JupiterB"
+     "Mars"
+     "MarsB"
+     "Mercury"
+     "MercuryB"
+     "Moon"
+     "NeptuneB"
+     "PlutoB"
+     "SaturnB"
+     "Sun"
+     "UranusB"
+     "Venus"
+     "VenusB"
+     "END_OF_INPUT"
+	SHADOWING FIX_EMIT 
+	FOOT_LWIDTH 1 
+	UTCD TRANSREC 
+	SO_DIST 0 
+	IRATE 0 
+	SHIFT 0 
+	LWIDTH 1 
+	LSTYLE 65535
+	COLOR White
+	HOST_CUE DIAMOND1
+	TARGET_CUE X
+	CHST HOST 
+	FOOT OFF
+	CONE OFF
+	SHAD OFF
+	LINK ON
+	CUE OFF
+	NEEDVIS OFF
+	SHOW_STARS OFF
+	CONSTRAIN OFF
+	INVERT OFF
+	USE_TERRAIN ON
+	USE_3DMODELS OFF
+	TE_HOSTS OFF
+	TE_TARGS OFF
+	RANGING RNG_GEOMETRIC 
+	MIN_RANGE 0 
+	MAX_RANGE 10000000 

@@ -90,3 +90,5 @@ def run_soap_windows():
 
     return None
 
+if __name__ == "__main__":
+    pass

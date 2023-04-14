@@ -341,6 +341,13 @@ def add_contact_analysis(pairs_text, step_size, name, duration):
 		)
 	return text
 
+def add_visibility_sensors(satellites_text):
+	text = read_file("./templates/visibility.orb")
+	text = text.format(
+		variables = satellites_text
+	)
+	return text
+
 def add_coordinate_view(targets_text, step_size, name, duration):
 	"""
 	Returns the entry text for a view of (x, y, z) coordinates for a given 
@@ -393,6 +400,11 @@ def generate_orb(satellites, name, date=TODAY):
 	for sat in satellites:
 		# build satellite object
 		text += add_object(sat) + "\n"
+
+	# add visibility
+	# variables_text = "\n".join([f"\"{sat['object_name']}\"" for sat in satellites])
+	# text += add_visibility_sensors(variables_text)
+	text += read_file("./templates/visibility_inv.orb")
 
 	# add transmitters
 	for sat in satellites:

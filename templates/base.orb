@@ -752,6 +752,9 @@ DEFINE VIEW WORLD  ".Earth CI Observer View" ".Earth CI Observer" ".Earth Nadir"
   SUBPOINTS SET
   ORBITS SET
   ALINKS SET
+  	LINK_LIST
+     "Visibility"
+     "END_OF_INPUT"
 	LINK_LIST
      "END_OF_INPUT"
   ACUES SET
@@ -795,6 +798,9 @@ DEFINE VIEW WORLD  ".Earth CR Observer View" ".Earth CR Observer" ".Earth Nadir"
   SUBPOINTS SET
   ORBITS SET
   ALINKS SET
+  	LINK_LIST
+     "Visibility"
+     "END_OF_INPUT"
 	LINK_LIST
      "END_OF_INPUT"
   ACUES SET
@@ -838,6 +844,9 @@ DEFINE VIEW WORLD  ".Earth Cartesian View" "Earth" ".Earth Cartesian"
   SUBPOINTS SET
   ORBITS SET
   ALINKS SET
+  	LINK_LIST
+     "Visibility"
+     "END_OF_INPUT"
 	LINK_LIST
      "END_OF_INPUT"
   ACUES SET
@@ -885,6 +894,9 @@ DEFINE VIEW WORLD  ".Earth Ground View" ".Earth Ground Relative" ".Earth Ground 
   SUBPOINTS SET
   ORBITS SET
   ALINKS SET
+  	LINK_LIST
+     "Visibility"
+     "END_OF_INPUT"
 	LINK_LIST
      "END_OF_INPUT"
   ACUES SET
@@ -932,6 +944,9 @@ DEFINE VIEW WORLD  ".Earth Polar View" ".Earth Polar Observer" ".Earth Nadir, PM
   SUBPOINTS SET
   ORBITS SET
   ALINKS SET
+  	LINK_LIST
+     "Visibility"
+     "END_OF_INPUT"
 	LINK_LIST
      "END_OF_INPUT"
   ACUES SET
@@ -979,6 +994,9 @@ DEFINE VIEW WORLD  ".Earth Sky View" ".Earth Ground Local" ".Earth Ground Ptg"
   SUBPOINTS SET
   ORBITS SET
   ALINKS SET
+  	LINK_LIST
+     "Visibility"
+     "END_OF_INPUT"
 	LINK_LIST
      "END_OF_INPUT"
   ACUES SET
@@ -1032,6 +1050,9 @@ DEFINE VIEW WORLD  "Ecliptic View" ".Ecliptic Observer" ".Sun Nadir"
   SUBPOINTS SET
   ORBITS SET
   ALINKS SET
+  	LINK_LIST
+     "Visibility"
+     "END_OF_INPUT"
 	LINK_LIST
      "END_OF_INPUT"
   ACUES SET
@@ -1079,6 +1100,9 @@ DEFINE VIEW WORLD  "Ground to Space View" ".Earth Ground Observer" ".Earth Zenit
   SUBPOINTS SET
   ORBITS SET
   ALINKS SET
+  	LINK_LIST
+     "Visibility"
+     "END_OF_INPUT"
 	LINK_LIST
      "END_OF_INPUT"
   ACUES SET
@@ -1127,6 +1151,9 @@ DEFINE VIEW WORLD  "Sun to Earth View" "Sun" ".Earth Nadir"
   SUBPOINTS SET
   ORBITS SET
   ALINKS SET
+  	LINK_LIST
+     "Visibility"
+     "END_OF_INPUT"
 	LINK_LIST
      "END_OF_INPUT"
   ACUES SET

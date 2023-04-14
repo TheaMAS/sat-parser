@@ -25,8 +25,30 @@ class IntervalMatrixIterator():
 
         return result
 
-# TODO : add iterate upper
+def matrix_enumerate(matrix):
+    dim_row = matrix.dim_row
+    dim_col = matrix.dim_col 
 
+    index = (0, 0)
+    counter = 0
+    for element in matrix:
+        yield index, element
+        counter += 1
+        index = (counter // dim_col, counter % dim_col)
+        # print(index)
+
+def upper_matrix_enumerate(matrix):
+    dim_row = matrix.dim_row
+    dim_col = matrix.dim_col
+
+    index = (0, 0)
+    counter = 0
+    for element in matrix:
+        if index[0] <= index[1]:
+            yield index, element
+
+        counter += 1
+        index = (counter // dim_col, counter % dim_col)
 
 class IntervalMatrix():
 
@@ -261,11 +283,6 @@ class IntervalMatrix():
     def empty_matrix(m, n):
         array = [[P.empty() for j in range(n)] for i in range(m)]
         return IntervalMatrix(n, n, array)
-'''
-    def empty_matrix(n):
-        matrix = [[P.empty() for j in range(m)] for i in range(n)]
-        return IntervalMatrix(n, n, matrix)
-'''
 
     @staticmethod
     def identity_matrix(n):
