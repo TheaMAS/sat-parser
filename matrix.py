@@ -273,7 +273,7 @@ class IntervalMatrix():
         for i in range(n):
             array[i][i] = P.open(-P.inf, P.inf)
 
-        return IntervalMatrix(n, n, matrix) 
+        return IntervalMatrix(n, n, array) 
 
     @staticmethod
     def complete_matrix(n):
