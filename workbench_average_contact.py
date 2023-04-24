@@ -165,24 +165,16 @@ def test_5():
 
 if __name__ == "__main__":
 
-    M = IntervalMatrix(4, 4)
-    for i in range(0,4):
-        M.set_element(i, i, P.open(0, 25))
-    '''M.set_element(0, 1, P.open(0,10))
-    M.set_element(1, 0, P.open(0,10))
-    M.set_element(1, 2, P.open(5, 15))
-    M.set_element(2, 1, P.open(5, 15))
-    M.set_element(2, 3, P.open(10, 20))
-    M.set_element(3, 2, P.open(10, 20))
-    M.set_element(3, 0, P.open(15, 25))
-    M.set_element(0, 3, P.open(15, 25))
-    print(M)'''
 
     #test_1()
     #test_2()
     #test_3()
     #test_4()
     test_5()
+
+
+
+
     '''
     matrix = IntervalMatrix(3, 3)
     #print(matrix)
