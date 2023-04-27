@@ -233,6 +233,23 @@ class IntervalMatrix():
             strings.append(str(row))
         return "\n".join(strings)
 
+    def get_slice_at(self, time):
+        """ 
+        This method returns a the adjacency matrix of the graph slice at time 
+            `time` of the IntervalMatrix object (representing TVG).
+
+        The output is in the form of a two-dimensional list.
+        """
+        array = [[0 for j in range(self.dim_col)] for i in range(self.dim_row)]
+
+        for i in range(self.dim_row):
+            for j in range(self.dim_col):
+                if time in self.array[i][j]:
+                    # print(f"{i},{j} : {time} in {str(self.array[i][j])}")
+                    array[i][j] = 1
+
+        return array
+
     @staticmethod
 
     def matrix_multiply_square(A, B, n):

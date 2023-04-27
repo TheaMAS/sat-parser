@@ -42,6 +42,7 @@ def get_graph_slice_at(graph, time):
 
     # edges = {}
     for edge_key, edge_times in graph["edges"].items():
+        edge_source, edge_destination = edge_key.split(" - ")
 
         # check if time lives in edge_times between rise and set
         time_count = len(edge_times)
@@ -52,13 +53,13 @@ def get_graph_slice_at(graph, time):
 
             if rise_time <= time and time <= set_time:
                 # add edge
-                edge_source, edge_destination = edge_key.split(" - ")
+                # edge_source, edge_destination = edge_key.split(" - ")
                 # edges[edge_key] = g.add_edge(nodes[edge_source], nodes[edge_destination])
                 g.add_edge(nodes[edge_source], nodes[edge_destination])
 
-            if time > set_time:
-                # get out of loop since this edge will not be added
-                break;
+            # if time > set_time:
+            #     # get out of loop since this edge will not be added
+            #     break;
 
     return g
 
