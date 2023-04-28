@@ -88,10 +88,37 @@ def get_diameter(g):
     """
     diameter = -1
 
-    if nx.number_connected_components(g) == 1:
-        diameter = nx.diameter(g)
+    for sg in [g.subgraph(c).copy() for c in nx.connected_components(g)]:
+        diameter = max(diameter, nx.diameter(sg))
+        # periphery = nx.periphery(sg)
+
+    # if nx.number_connected_components(g) == 1:
+    #     diameter = nx.diameter(g)
 
     return diameter
+
+def get_max_diameter(tvg, sample_times):
+    """ 
+    Given a TVG and a list of sample times, 
+    return the max diameter, max time, and the realizing subgraph
+    """
+
+    diameter = -1
+    time_max = -1
+    sg_max = None
+
+    for k, time in enumerate(sample_times):
+        g = get_graph_slice_at(tvg, time)
+
+        for sg in [g.subgraph(c).copy() for c in nx.connected_components(g)]:
+
+            diameter_sg = nx.diameter(sg)
+            if diameter_sg > diameter:
+                diameter = diameter_sg
+                time_max = time
+                sg_max = sg
+
+    return diameter, time_max, sg_max
 
 def get_vertex_count(g):
     """
