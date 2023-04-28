@@ -1,5 +1,7 @@
 from sgp4.api import Satrec
 from sgp4.api import jday
+from sgp4 import omm
+
 
 from datetime import datetime
 
@@ -9,6 +11,36 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
 from os_utilities import *
+
+EARTH_RADIUS = 6367 # KM
+
+def starlink_exclude(date, dist_min, dist_max):
+    """
+    Returns a list of starlink satellites to exclude if they are not within 
+        the range [dist_min, dist_max] given in km.
+    """
+    jd, fr = jday(date.year, date.month, date.day, date.hour, date.minute, date.second)
+
+    starlink_omm = []
+    with open("./sources/starlink.csv") as f:
+        for entry in omm.parse_csv(f):
+            starlink_omm.append(entry)
+    
+    exclude_list = []
+    for entry in starlink_omm:
+        sat_name = entry['OBJECT_NAME']
+
+        sat = Satrec()
+        omm.initialize(sat, entry)
+
+        e, r, v = sat.sgp4(jd, fr)
+        height = np.sqrt(np.sum(np.asarray(r)**2)) - EARTH_RADIUS
+        # print(f"{sat_name} height is {height}")
+        if height <= dist_min or height >= dist_max:
+            # print(f"excluding {sat_name} with height {height}")
+            exclude_list.append(sat_name)
+
+    return exclude_list
 
 if __name__ == "__main__":
 
@@ -27,6 +59,10 @@ if __name__ == "__main__":
     print(jd)
     print(fr)
     # exit()
+
+    date = datetime.strptime("01/08/22 00:00", "%d/%m/%y %H:%M")
+    assert(len(starlink_exclude(date, 200, 800)) == 240)
+
 
 def get_jday(datetime_object):
     year = datetime_object.year
