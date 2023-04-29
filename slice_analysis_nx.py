@@ -2,6 +2,7 @@ import contact_analysis as ca
 from os_utilities import *
 
 # from graph_tool.all import *
+import matplotlib
 import matplotlib.pyplot as plt
 
 import scipy
@@ -119,6 +120,14 @@ def get_max_diameter(tvg, sample_times):
                 sg_max = sg
 
     return diameter, time_max, sg_max
+
+def save_figure(g, filepath):
+    fig = plt.figure()
+    nx.draw_networkx(g, pos=nx.spring_layout(g), ax=fig.add_subplot(), 
+        with_labels=True, node_size=100)
+    # matplotlib.use("Agg") 
+    fig.savefig(filepath)
+    plt.close()
 
 def get_vertex_count(g):
     """
