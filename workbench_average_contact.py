@@ -146,7 +146,8 @@ def test_4():
 
 def test_5():
     #file = 'outputs/moongnd-8/starlink_15_sats_0 Contact Analysis.csv'
-    file = 'outputs/moongnd-8/starlink_0 Contact Analysis.csv'
+    file = "./outputs/experiments/starlink-50-sat-single/starlink_2023-04 Contact Analysis.csv"
+    #file = 'outputs/moongnd-8/starlink_0 Contact Analysis.csv'
     A = fp.soap_converter(file)
     filt = average_contact_filtration(A, 1)
     print("Average Contact Filtration, t = .99")
@@ -155,12 +156,35 @@ def test_5():
     simp = construct_weighted_simplex_from_matrix(filt)
     #print(simp)
     zz, dgms, cells = z.calculate_zz_persistence(simp)
-
     number_of_plots = len(dgms)
     #fig, axs = plt.subplots(2, 1)
 
     for i, k in enumerate(dgms):
         d.plot.plot_diagram(k, show = True)
+
+def test_6():
+    # Two bands at different times
+
+    M = IntervalMatrix(10, 10)
+    for i in range(0,10):
+        M[i, i] = P.open(0, 25)
+    M[0, 1] = P.open(0, 10)
+    M[1, 2] = P.open(0, 10)
+    M[2, 3] = P.open(0, 10)
+    M[0, 3] =  P.open(0, 10)
+    M[5, 6] = P.open(11, 21)
+    M[6, 7] = P.open(11, 21)
+    M[5, 7] = P.open(11, 21)
+    filt = average_contact_filtration(M, .1)
+    simp = construct_weighted_simplex_from_matrix(filt)
+    zz, dgms, cells = z.calculate_zz_persistence(simp)
+    print(M)
+    print(zz)
+    for i, k in enumerate(dgms):
+        print("{}: {}".format(i, k))
+    for i, k in enumerate(dgms):
+        d.plot.plot_diagram(k, show=True)
+    print("")
 
 
 if __name__ == "__main__":
@@ -170,8 +194,9 @@ if __name__ == "__main__":
     #test_2()
     #test_3()
     #test_4()
-    test_5()
 
+    #test_5()
+    test_6()
 
 
 

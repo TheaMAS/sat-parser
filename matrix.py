@@ -274,6 +274,10 @@ class IntervalMatrix():
 
         return None
 
+    def matrix_window(self, I):
+        # Returns an interval slice of the matrix
+        return self * IntervalMatrix.bounded_identity_matrix(self.get_dimension()[1], I)
+
     # TODO : test change
     @staticmethod
     def empty_matrix(m, n):
@@ -293,6 +297,13 @@ class IntervalMatrix():
         return IntervalMatrix(n, n, array) 
 
     @staticmethod
+    def bounded_identity_matrix(n, I):
+        array = [[P.empty() for j in range(n)] for i in range(n)]
+        for i in range(n):
+            array[i][i] = I
+        return IntervalMatrix(n, n, array)
+
+    @staticmethod
     def complete_matrix(n):
         """
         Returns an `n` square matrix with [-infty, infty] in each entry.
@@ -300,11 +311,6 @@ class IntervalMatrix():
         array = [[P.closed(-P.inf, P.inf) for j in range(n)] for i in range(n)]
 
         return IntervalMatrix(n, n, array)
-
-
-    def empty_matrix(n):
-        matrix = [[P.empty() for j in range(m)] for i in range(n)]
-        return IntervalMatrix(n, n, matrix)
 
 
 def get_average_contact_matrix(mat):

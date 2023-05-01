@@ -246,7 +246,6 @@ def snapshot(A, t):
     #Grab yourself a time sandwich
     return interval_matrix_mult(A, create_tI(len(A),t))
 
-    return 0
 
 # Obsolete
 def create_tI(dim, t):
@@ -536,20 +535,23 @@ def cb3d(M, title, path):
 
     #Demo version
     #Take a matrix M and output a 3D contact graph, saved to file "text.png"
-    max_i = len(M.matrix)
-    max_j = len(M.matrix[0])
+    dim = M.get_dimension()
+    max_i = dim[0]
+    max_j = dim[1]
     fig = plt.figure(figsize=(8,5))
     ax = plt.axes(projection='3d')
 
     #create empty square matrix
     full_contacts = []
-    temp = M.matrix
-    full_contacts.append(M.matrix)
+    temp = M
+    full_contacts.append(M)
 
-    int_min = 0
-    int_max = 10
+    int_min = M.get_min_endpoint(False)
+    int_max = M.get_max_endpoint(False)
+
 
     #This snippet finds the lower and upper bounds of our plotbox
+    '''
     for i in range(max_i):
         for j in range(i, max_j):
             for pt in P.to_data(full_contacts[0][i][j]):
@@ -561,13 +563,14 @@ def cb3d(M, title, path):
                     int_max = pt[2]
                 if int_min > pt[1] and pt[1] >= 0 and pt[1] != -float('inf'):
                     int_min = pt[1]
+    '''
 
     x_vals, y_vals= [],[]
     z_tops = []
     z_bottoms = []
     for i in range(max_i):
         for j in range(i, max_j):
-            for pt in P.to_data(full_contacts[0][i][j]):
+            for pt in P.to_data(M[i, j]):
                 #DEBUG
                 #if(pt[1] == float('inf')):
                 #    print(full_contacts[k][i][j])
