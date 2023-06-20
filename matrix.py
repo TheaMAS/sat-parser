@@ -313,6 +313,11 @@ class IntervalMatrix():
         return IntervalMatrix(n, n, array)
 
 
+    def empty_matrix(n):
+        matrix = [[P.empty() for j in range(m)] for i in range(n)]
+        return IntervalMatrix(n, n, matrix)
+
+
 def get_average_contact_matrix(mat):
     minimum = mat.get_min_endpoint()
     maximum = mat.get_max_endpoint()

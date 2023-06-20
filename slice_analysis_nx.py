@@ -107,19 +107,26 @@ def get_max_diameter(tvg, sample_times):
     diameter = -1
     time_max = -1
     sg_max = None
+    diameters = []
 
     for k, time in enumerate(sample_times):
         g = get_graph_slice_at(tvg, time)
 
+        subgraph_diameters = []
         for sg in [g.subgraph(c).copy() for c in nx.connected_components(g)]:
 
             diameter_sg = nx.diameter(sg)
+            subgraph_diameters.append(diameter_sg)
+
             if diameter_sg > diameter:
                 diameter = diameter_sg
                 time_max = time
                 sg_max = sg
 
-    return diameter, time_max, sg_max
+        diameters.append(max(subgraph_diameters))
+
+    return diameter, time_max, sg_max, diameters
+
 
 def save_figure(g, filepath):
     fig = plt.figure()
