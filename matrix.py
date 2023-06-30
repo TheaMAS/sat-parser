@@ -1,6 +1,7 @@
 import portion as P
 import contact_analysis as ca
 import interval_distance_functions as idf
+import copy
 
 class IntervalMatrixIterator():
 
@@ -109,11 +110,12 @@ class IntervalMatrix():
             self.matrix[i][i] = P.empty()
         return True
 
-    def get_k_walk(k):
+    def get_k_walk(self, k):
+        B = copy.deepcopy(self)
         #Naive -- can make way more efficient
-        temp = self.array
+        temp = copy.deepcopy(self)
         for x in range(k-1):
-            temp = temp * self.array
+            temp = temp * B
         return temp
 
     def get_A_star():
@@ -166,9 +168,6 @@ class IntervalMatrix():
                         elif temp != None:
                             ret = min(ret, temp)
             return ret
-
-    def get_slice(self, window_interval):
-        pass
 
     def __add__(self, im):
         if self.dim_row != im.dim_row or self.dim_col != im.dim_col:
@@ -235,7 +234,7 @@ class IntervalMatrix():
 
     def get_slice_at(self, time):
         """ 
-        This method returns a the adjacency matrix of the graph slice at time 
+        This method returns the adjacency matrix of the graph slice at time 
             `time` of the IntervalMatrix object (representing TVG).
 
         The output is in the form of a two-dimensional list.
@@ -319,14 +318,18 @@ class IntervalMatrix():
 
 
 def get_average_contact_matrix(mat):
-    minimum = mat.get_min_endpoint()
-    maximum = mat.get_max_endpoint()
+    minimum = mat.get_min_endpoint(False)
+    maximum = mat.get_max_endpoint(False)
 
-    A = [[None for j in range(mat.dim_col)] for i in range(mat.dim_row)]
+    sliced_mat = mat.matrix_window(P.open(minimum, maximum))
+
+    A = [[None for j in range(sliced_mat.dim_col)] for i in range(sliced_mat.dim_row)]
     for k in range(len(A)):
         for j in range(len(A[0])):
-            A[k][j] = ((maximum - minimum) - idf.xor_distance(mat.get_element(k, j), P.open(minimum, maximum)))/(maximum-minimum)
+            A[k][j] = ((maximum - minimum) - idf.xor_distance(sliced_mat.get_element(k, j), P.open(minimum, maximum)))/(maximum-minimum)
     return A
+
+
 
 if __name__ == "__main__":
     matrix = IntervalMatrix(3, 3)
