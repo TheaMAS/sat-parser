@@ -1,6 +1,7 @@
 # import contact_analysis as ca
 import report_parser as rp
 import portion as P
+import warnings
 
 from matrix import IntervalMatrix
 
@@ -18,39 +19,40 @@ from matrix import IntervalMatrix
 # @return: IntervalMatrix
 
 def soap_converter(contactsheet):
-    contact_plan = rp.contact_analysis_parser(contactsheet)
-    graph = rp.construct_graph(contact_plan)
+	warnings.warn("Warning: Deprecated method instance: file_parser.soap_converter(). Please use report_parser.soap_converter() instead.", DeprecationWarning)
+	contact_plan = rp.contact_analysis_parser(contactsheet)
+	graph = rp.construct_graph(contact_plan)
 
-    nodes = graph["nodes"]
-    edges = graph["edges"]
+	nodes = graph["nodes"]
+	edges = graph["edges"]
 
-    node_counter = len(nodes)
-    print(node_counter)
+	node_counter = len(nodes)
+	print(node_counter)
 
-    #generate blank matrix for overall
-    Final=[[ P.empty() for i in range(node_counter) ] for j in range(node_counter)]
-    #diagonal is all R (for now, should be adjusted to min/max time in future rev)
-    for i in range(node_counter):
-        Final[i][i]=P.open(-P.inf,P.inf)
+	#generate blank matrix for overall
+	Final=[[ P.empty() for i in range(node_counter) ] for j in range(node_counter)]
+	#diagonal is all R (for now, should be adjusted to min/max time in future rev)
+	for i in range(node_counter):
+	    Final[i][i]=P.open(-P.inf,P.inf)
 
-    #generate interval for each edge and append it to matrix via union
-    for edge_key, edge_times in edges.items():
-        source, destination = edge_key.split(' - ')
+	#generate interval for each edge and append it to matrix via union
+	for edge_key, edge_times in edges.items():
+	    source, destination = edge_key.split(' - ')
 
-        # print(len(edge_times))
+	    # print(len(edge_times))
 
-        for i in range(0, len(edge_times), 2):
-            rise_time = edge_times[i]
-            set_time = edge_times[i + 1]
+	    for i in range(0, len(edge_times), 2):
+	        rise_time = edge_times[i]
+	        set_time = edge_times[i + 1]
 
-            # rise = edge_times[0]
-            # set = edge_times[1]
+	        # rise = edge_times[0]
+	        # set = edge_times[1]
 
-            #add interval to both F[i][j] and F[j][i] via union (should create disjoint unions generally)
-            Final[nodes[source]][nodes[destination]] = Final[nodes[source]][nodes[destination]] | P.open(rise_time, set_time)
-            Final[nodes[destination]][nodes[source]] = Final[nodes[destination]][nodes[source]] | P.open(rise_time, set_time)
+	        #add interval to both F[i][j] and F[j][i] via union (should create disjoint unions generally)
+	        Final[nodes[source]][nodes[destination]] = Final[nodes[source]][nodes[destination]] | P.open(rise_time, set_time)
+	        Final[nodes[destination]][nodes[source]] = Final[nodes[destination]][nodes[source]] | P.open(rise_time, set_time)
 
-    return IntervalMatrix(node_counter, node_counter, Final)
+	return IntervalMatrix(node_counter, node_counter, Final)
 
 if __name__ == "__main__":
 
