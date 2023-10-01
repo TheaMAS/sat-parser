@@ -234,6 +234,7 @@ class Nevada():
         return self.left == Contact.identity() and self.right == Contact.identity()
 
     def contains_point(self, i: float, j: float) -> bool:
+        # TODO : rename to contains index?
 
         # assert i > -INF and j < INF
         # Proposition 6.5
@@ -272,6 +273,7 @@ class Nevada():
 
     def get_boundary(self) -> List[Tuple[float]]:
         # assumption : self is a non-storage nevada
+        #   otherwise points may not make sense
 
         left = self.left
         right = self.right
@@ -350,33 +352,30 @@ class Nevada():
             contained = contained and self.contains_point(*p)
         return contained
 
-    def contains_nevada(self, other: Type[Contact]) -> bool:
+    def contains_nevada(self, other: Optional["Nevada"]) -> bool:
 
-        # TODO : check case nevada is Storage
         match(self.is_storage(), other.is_storage()):
             case (True, True):
                 # print("Both are Storage")
                 return other.storage in self.storage
             case (True, False):
-                # print("First is Storage. Second is Nevada")
+                # print("First is storage. Second is Nevada")
                 return other.left.delay + other.right.delay + other.storage.capacity <= self.storage.capacity
             case (False, True):
-                # print("First is Nevada. Second is Storage")
+                # print("First is Nevada. Second is storage")
                 return False
             case (False, False):
-                # print("Both are Nevadas")
-                pass
+                # print("Both are non-storage Nevadas")                
 
-        # self and other are non-storage nevada's, so points make sense.
-        points = self.get_boundary()
+                boundary = other.get_boundary()
 
-        contained = True
-        for p in points:
-            contained = contained and self.contains_point(*p)
+                contained = True
+                for p in points:
+                    contained = contained and self.contains_point(*p)
 
-        return contained
+                return contained
 
-# unit tests
+# `Nevada` class unit tests
 if __name__ == "__main__":
 
     c = Contact.identity()
@@ -409,7 +408,7 @@ if __name__ == "__main__":
     # boundary c * S_alpha * c'; alpha < inf
     assert set([(6, 8), (2, 6), (5, 9), (2, 5), (6, 9), (3, 5)]) == set(Nevada(Contact(2, 6, 0), Contact(3, 7, 2), Storage(2)).get_boundary())
 
-    size = 12
+    # size = 12
 
     # boundary points : S_(inf)
     # c = Contact.identity()
