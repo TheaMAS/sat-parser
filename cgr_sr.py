@@ -2,6 +2,8 @@ import portion as P
 
 import warnings
 
+INFINITY = float("inf")
+
 if __name__ == "__main__":
     DEBUG = True;
 else:
@@ -69,21 +71,24 @@ print(c * cc)
 
 class Storage():
 
-    def __init__(self, capacity):
+    def __init__(self, capacity = P.inf):
         self.capacity = capacity
 
 class Nevada():
 
-    def __init__(self, left, right):
+    def __init__(self, left, right, storage = Storage()):
         # Nevada contains left and right Contacts
         #   c S c'
         self.left = left
         self.right = right
+        self.storage = storage
 
         # todo : maybe on init precalculate standard forms to use for comparison
         # self.std = Nevada.standard_form(left, right)
 
     def get_boundary_vertices(self):
+        # todo : rewrite for generalized storage
+
         # vertices = [
         #     (self.right.lower + self.right.delay, self.left.lower), # top left
         #     (self.right.upper + self.right.delay, self.left.lower), # top right
@@ -132,6 +137,7 @@ class Nevada():
             pass
         pass
 
+    # TODO : rename to get_point(i, j)
     def contains_point(self, point):
         (x, y) = point
         if y not in self.left.interval:
@@ -208,6 +214,7 @@ print(n1 * n2)
 print(n2)
 # exit()
 
+# TODO : rename to product
 class Word():
     # c * cSc * S * S * c * cSc * cSc
     # cSc
@@ -265,6 +272,7 @@ Word.multiply_elements(Nevada(cc, c), cc)
 Word.multiply_elements(c, Nevada(cc, c))
 Word.multiply_elements(Nevada(cc, c), Nevada(c, cc))
 
+# TODO : rename to sum
 class Element():
 
     # self.element = []
