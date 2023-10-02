@@ -4,6 +4,26 @@ import warnings
 
 from typing import List, Optional, Tuple, Type
 
+def get__ascii_diagram(element, start: float, end: float, step: float = 1) -> str:
+    # element must implment `get_entry(i, j)`
+
+    indices = [round(start + delta * step, 3) for delta in range(int((end - start) / step) + 1)]
+
+    diagram = ""
+    for i in indices:
+        for j in indices:
+            value = f"{element.get_entry(i, j)} "
+
+            if element.get_entry(i, j) > 0:
+                value = "*"
+            else:
+                value = "-"
+
+            diagram += value
+        diagram += "\n"
+
+    return diagram
+
 INF = float("inf")
 
 class Contact():
@@ -212,22 +232,22 @@ class Nevada():
     def __str__(self):
         return f"{self.left} {self.storage} {self.right}"
 
-    def get_ascii_diagram(self, size):
-        # TODO : rewrte to have start and end range, as well as step size
+    def get_ascii_diagram(self, start: float, end: float, step: float = 1):
+        return get_ascii_diagram(self, start, end, step) 
 
-        diagram = ""
-        for i in range(size):
-            for j in range(size):
-                value = f"{self.get_entry(i, j)} "
+        # diagram = ""
+        # for i in range(size):
+        #     for j in range(size):
+        #         value = f"{self.get_entry(i, j)} "
 
-                if self.get_entry(i, j) > 0:
-                    value = "*"
-                else:
-                    value = " "
+        #         if self.get_entry(i, j) > 0:
+        #             value = "*"
+        #         else:
+        #             value = " "
 
-                diagram += value
-            diagram += "\n"
-        return diagram
+        #         diagram += value
+        #     diagram += "\n"
+        # return diagram
 
     def is_storage(self) -> bool:
         """Returns True if Nevada is of the form : S_alpha, False otherwise."""
@@ -408,7 +428,7 @@ if __name__ == "__main__":
     # boundary c * S_alpha * c'; alpha < inf
     assert set([(6, 8), (2, 6), (5, 9), (2, 5), (6, 9), (3, 5)]) == set(Nevada(Contact(2, 6, 0), Contact(3, 7, 2), Storage(2)).get_boundary())
 
-    # size = 12
+    # start, end = 1, 10
 
     # boundary points : S_(inf)
     # c = Contact.identity()
@@ -417,71 +437,15 @@ if __name__ == "__main__":
     # n = Nevada(Contact(2, 6, 0), Contact(3, 7, 2), S)
     # n = Nevada.standard_form(n.left, n.right, n.storage)
     # print(n)
-    # print(n.get_ascii_diagram(size))
+    # print(n.get_ascii_diagram(start, end, step=0.5))
     # print(n.get_boundary())
     # print(n.contains_point(-INF, -INF))
 
     # interval = P.closed(-P.inf, P.inf)
     # print(-INF in interval)
 
-exit()
 
-c = Contact.identity()
-cc = Contact(1, 4, 2)
-S = Storage()
-
-print(c)
-print(cc)
-
-size = 10
-
-n = Nevada(c, cc, S)
-# print(n)
-print(n.get_ascii_diagram(size))
-
-n = Nevada(cc, c, S)
-print(n)
-print(n.get_ascii_diagram(size))
-
-# c = Contact(3, 5, 1)
-# n = Nevada(c, c, S)
-# print(n)
-# print(n.get_ascii_diagram(size))
-
-# nn = n.standard_form(n.left, n.right, n.storage)
-# print(nn)
-# print(nn.get_ascii_diagram(size))
-# print(Nevada(c, cc, Storage()).get_ascii_diagram(size))
-
-points = n.get_boundary()
-print(points)
-
-exit()
-
-# diagram = ""
-# for i in range(size):
-#     for j in range(size):
-#         if (i, j) in points:
-#             diagram += "*"
-#         else:
-#             diagram += "-"
-#     diagram += "\n"
-# print(diagram)
-
-# import matplotlib.pyplot as plt
-# x, y = zip(*points)
-# plt.scatter(x,y)
-# plt.show()
-
-# s = Storage()
-# n = s.to_nevada()
-# print(n.get_entry(0, 0))
-# diagram = ""
-# for i in range(10):
-#     for j in range(10):
-#         diagram += f"{n.get_entry(i, j)} "
-#     diagram += "\n"
-# print(diagram)
+# exit()
 
 generator_types = Type[Contact] | Type[Contact] | Type[Nevada]
 
@@ -501,7 +465,6 @@ class Product():
             text += f"{e} "
         return text
 
-    # TODO : rename to evaluate
     def evaluate(self) -> Type[Contact] | Type[Nevada]:
         if len(self.sequence) < 2:
             return self.sequence[0]
@@ -512,9 +475,24 @@ class Product():
         
         return element
 
+    def is_standard_form(self) -> bool:
 
-    def get_simplified(self) -> Type[Contact] | Type[Nevada]:
+        # TODO finish this method; for Theorem 6.6
+
+        is_standard = True
+
+        for e in self.sequence:
+            if isinstance(e, Nevada):
+                is_standard = False
+                break
+
+        pass
+
+
+    def get_standard_form(self) -> List[Type[Contact] | Type[Storage]]:
         """Returns `Product` with sequence of the form `[c, S, c, S, ...]`."""
+        for e in self.sequence:
+            print(type(e))
         return sequence
 
     @staticmethod
@@ -557,7 +535,19 @@ p = Product(sequence)
 print(p)
 q = p.evaluate()
 print(q)
+p.get_standard_form()
 # print(q.get_ascii_diagram(size))
 # n = Nevada.standard_form(q.left, q.right, q.storage)
 # print(n)
 # print(n.get_ascii_diagram(size))
+
+class Sum():
+
+    def __init__(self, elements):
+        self.elements = elements
+
+    def __add__(self, other):
+        return Sum(self.elements + other.elements)
+
+    def __mul__(self, other):
+        pass
