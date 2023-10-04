@@ -4,6 +4,17 @@ import warnings
 
 from typing import List, Optional, Tuple, Type
 
+INF = float("inf")
+
+def intersect(intervals : List[P.Interval]):
+    """Returns the intersection of the intervals in `intervals`."""
+    interval = P.closed(-INF, INF)
+    
+    for i in intervals:
+        interval = interval & i
+
+    return interval
+
 def get__ascii_diagram(element, start: float, end: float, step: float = 1) -> str:
     # element must implment `get_entry(i, j)`
 
@@ -23,8 +34,6 @@ def get__ascii_diagram(element, start: float, end: float, step: float = 1) -> st
         diagram += "\n"
 
     return diagram
-
-INF = float("inf")
 
 class Contact():
     
@@ -106,6 +115,9 @@ if __name__ == "__main__":
 
     points = Contact(4, 6, 0).get_boundary()
     assert (4, 4) in points and (6, 6) in points
+
+    # c = Contact.identity()
+    # print(c.get_interval())
 
 class Storage():
 
@@ -483,17 +495,81 @@ class Product():
 
         for e in self.sequence:
             if isinstance(e, Nevada):
-                is_standard = False
+                is_standard = False # maybe just return false
                 break
 
-        pass
+        # wait; would have to be at least three cSc?
+        if is_standard and len(self.sequence) == 1:
+            pass
+
+        return is_standard
 
 
     def get_standard_form(self) -> List[Type[Contact] | Type[Storage]]:
         """Returns `Product` with sequence of the form `[c, S, c, S, ...]`."""
+
+        standard_form = []
+
         for e in self.sequence:
             print(type(e))
         return sequence
+
+    # should be equivalent to `evaluate().get_entry(i, j)` but using Theorem 6.6
+    def evaluate_std(self, i: float, j: float) -> Type[Contact] | Type[Nevada]:
+
+        sequence = self.sequence
+        if not self.is_standard_form():
+            sequence = self.get_standard_form()
+
+        n = int(len(sequence) / 2)
+
+        cumulant_delay = [sequence[0].delay]
+        cumulant_storage = [sequence[1].capacity]
+        start_adjusted = [sequence[0].start]
+        end_adjusted = [sequence[0].end]
+
+        for l in range(n):
+            # calculate cumulant_delay[i]
+            delay = sequence[2 * (l + 1)].delay + cumulant_delay[-1]
+            cumulant_delay.append(delay)
+
+            # calculate cumulant_storage[i]
+            storage = sequence[2 * l + 1].capacity + cumulant_storage[-1]
+            cumulant_storage.append(storage)
+
+            # calculate start_adjusted[i]
+            start = sequence[2 * (l + 1)].start - cumulant_delay[l - 1]
+            start_adjusted.append(start)
+
+            # calculate end_adjusted[i]
+            end = sequence[2 * (l + 1)].end - cumulant_delay[l - 1]
+            end_adjusted.append(end)
+        
+        cumulant_delay.append(0) # Omega[-1] = 0
+        cumulant_storage.append(0) # A[-1] = 0
+
+        # calculate the conditions for which the value is nontrivial
+        intervals_a = [P.closed(start_adjusted[l] - cumulant_storage[l], end_adjusted[l]) for l in range(n)]
+        condition_a = i in intersect(intervals_a)
+
+        intervals_b = [P.closed(start_adjusted[l] + cumulant_delay[-2], end_adjusted[l] + cumulant_delay[-2] + cumulant_storage[-2] + cumulant_storage[l]) for l in range(n)]
+        condition_b = j in intersect(intervals_b)
+
+        condition_c = j in P.closed(i + cumulant_delay[-2], i + cumulant_delay[-2] + cumulant_storage[-2])
+
+        conditions = condition_a and condition_b and condition_c
+
+        # calculate the value of the matrix at index (i, j)
+        value = 0
+        if conditions:
+            quantity_a = min(end_adjusted[:-1]) - i
+            quantity_b = min([end - max(start_adjusted[:l+1]) for l, end in enumerate(end_adjusted[1:-1])], default=INF)
+            quantity_c = min([end + cumulant_delay[-2] + cumulant_storage[-2] - cumulant_storage[l] for l, end in enumerate(end_adjusted[1:])]) - j
+
+            value = min([quantity_a, quantity_b, quantity_c])
+
+        return value
+
 
     @staticmethod
     def multiply(x: generator_types, y: generator_types) -> generator_types:
@@ -531,11 +607,42 @@ sequence = [
     Contact(1, 8, 1),
     Contact(0, 8, 2)
 ]
-p = Product(sequence)
-print(p)
-q = p.evaluate()
-print(q)
-p.get_standard_form()
+
+sequence_standard = [
+    Contact(0, 10, 5),
+    Storage(),
+    Contact(3, 6, 2),
+    Storage(),
+    Contact(1, 7, 3)
+]
+
+sequence_standard = [
+    Contact(0, 10, 2),
+    Storage(),
+    Contact.identity()
+]
+n = Nevada(Contact(0, 10, 2), Contact.identity(), Storage())
+
+# p = Product(sequence)
+# print(p)
+# q = p.evaluate()
+# print(q)
+
+print(Product(sequence_standard).evaluate())
+print(n)
+# exit()
+
+p_std = Product(sequence_standard)
+
+# print(Product(sequence_standard).evaluate())
+s = 10
+for i in range(s):
+    for j in range(s):
+        # print(f"p({i}, {j}) = {q.get_entry(i, j)}, p'({i}, {j}) = {p_std.evaluate_std(i, j)}")
+        print(f"n({i}, {j}) = {n.get_entry(i, j)}, p'({i}, {j}) = {p_std.evaluate_std(i, j)}")
+
+
+# p.get_standard_form()
 # print(q.get_ascii_diagram(size))
 # n = Nevada.standard_form(q.left, q.right, q.storage)
 # print(n)
