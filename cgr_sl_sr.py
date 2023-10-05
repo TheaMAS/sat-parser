@@ -499,7 +499,9 @@ class Product():
                 break
 
         # wait; would have to be at least three cSc?
-        if is_standard and len(self.sequence) == 1:
+        n = len(self.sequence)
+
+        if is_standard and n == 1:
             pass
 
         return is_standard
@@ -570,7 +572,6 @@ class Product():
 
         return value
 
-
     @staticmethod
     def multiply(x: generator_types, y: generator_types) -> generator_types:
 
@@ -635,11 +636,11 @@ print(n)
 p_std = Product(sequence_standard)
 
 # print(Product(sequence_standard).evaluate())
-s = 10
-for i in range(s):
-    for j in range(s):
+# s = 10
+# for i in range(s):
+    # for j in range(s):
         # print(f"p({i}, {j}) = {q.get_entry(i, j)}, p'({i}, {j}) = {p_std.evaluate_std(i, j)}")
-        print(f"n({i}, {j}) = {n.get_entry(i, j)}, p'({i}, {j}) = {p_std.evaluate_std(i, j)}")
+        # print(f"n({i}, {j}) = {n.get_entry(i, j)}, p'({i}, {j}) = {p_std.evaluate_std(i, j)}")
 
 
 # p.get_standard_form()
@@ -647,6 +648,173 @@ for i in range(s):
 # n = Nevada.standard_form(q.left, q.right, q.storage)
 # print(n)
 # print(n.get_ascii_diagram(size))
+
+class ContactSequence():
+
+    def __init__(self, sequence: List[Contact]):
+
+        self.tau = tau
+        self.nu = nu
+        self.E = E
+        self.S = S
+        self.epsilon = epsilon
+        self.sigma = sigma
+        self.omega = omega
+        pass
+
+    def __mul__(self, other):
+        pass
+
+    def get_entry(self, i: float, j: float) -> float:
+        # TODO
+        tau = min(self.tau, other.tau, min(other.E, other.epsilon) - self.omega - self.S)
+        pass
+
+    def to_nevada(self) -> Type[Nevada]:
+        return Nevada(
+            Contact(self.sigma, min(self.E, self.epsilon), 0), 
+            Contact(self.S, self.epsilon, self.omega), 
+            Storage()
+        )
+
+
+def calculate_adjusted_variables(sequence: List[Type[Contact]]) -> Tuple[List[float]]:
+
+    n = len(sequence)
+
+    cumulant_delay = [sequence[0].delay]
+    start_adjusted = [sequence[0].start]
+    end_adjusted = [sequence[0].end]
+
+    for l in range(1, n):
+        # calculate cumulant_delay[i]
+        delay = sequence[l].delay + cumulant_delay[-1]
+        cumulant_delay.append(delay)
+
+        # calculate start_adjusted[i]
+        start = sequence[l].start - cumulant_delay[l - 1]
+        start_adjusted.append(start)
+
+        # calculate end_adjusted[i]
+        end = sequence[l].end - cumulant_delay[l - 1]
+        end_adjusted.append(end)
+
+    return cumulant_delay, start_adjusted, end_adjusted
+
+def maximum_transmission_duration(sequence: List[Contact]) -> float:
+    """Given a sequence of contacts `[c_1,...,c_n]`, 
+        returns the maximum transission duration.""" 
+        
+    # n = len(sequence)
+
+    cumulant_delay, start_adjusted, end_adjusted = calculate_adjusted_variables(sequence)
+
+    # cumulant_delay = [sequence[0].delay]
+    # start_adjusted = [sequence[0].start]
+    # end_adjusted = [sequence[0].end]
+
+    # for l in range(1, n):
+    #     # calculate cumulant_delay[i]
+    #     delay = sequence[l].delay + cumulant_delay[-1]
+    #     cumulant_delay.append(delay)
+
+    #     # calculate start_adjusted[i]
+    #     start = sequence[l].start - cumulant_delay[l - 1]
+    #     start_adjusted.append(start)
+
+    #     # calculate end_adjusted[i]
+    #     end = sequence[l].end - cumulant_delay[l - 1]
+    #     end_adjusted.append(end)
+
+    return min([end - max(start_adjusted[:k+1], default=0) for k, end in enumerate(end_adjusted)])
+
+# `maximum_transmission_duration` function unit tests
+if __name__ == "__main__":
+    # Example 6.12
+    assert maximum_transmission_duration([Contact(0, 3, 0), Contact(3, 4, 0), Contact(2, 7, 0)]) == 1
+
+    # Example 6.13
+    assert maximum_transmission_duration([Contact(0, 3, 0), Contact(3, 7, 0), Contact(2, 4, 0), Contact(8, 11, 0)]) == 1
+
+def storage_requirement(sequence: List[Contact], tau = None) -> float:
+
+    if tau == None:
+        tau = maximum_transmission_duration(sequence)
+
+    cumulant_delay, start_adjusted, end_adjusted = calculate_adjusted_variables(sequence)
+
+    # n = len(sequence)
+
+    # cumulant_delay = [sequence[0].delay]
+    # start_adjusted = [sequence[0].start]
+    # end_adjusted = [sequence[0].end]
+
+    # for l in range(1, n):
+    #     # calculate cumulant_delay[i]
+    #     delay = sequence[l].delay + cumulant_delay[-1]
+    #     cumulant_delay.append(delay)
+
+    #     # calculate start_adjusted[i]
+    #     start = sequence[l].start - cumulant_delay[l - 1]
+    #     start_adjusted.append(start)
+
+    #     # calculate end_adjusted[i]
+    #     end = sequence[l].end - cumulant_delay[l - 1]
+    #     end_adjusted.append(end)
+
+    # print(f"max(0, {tau} - {min(end_adjusted[:-1])} + {max(start_adjusted)})")
+    # return max(0, tau - min(end + max(start_adjusted[:l+1]) for l, end in enumerate(end_adjusted[:-1])))
+    return max(0, tau - min(end_adjusted[:-1]) + max(start_adjusted))
+
+# `storage_requirement` function unit tests
+if __name__ == "__main__":
+    # Example 6.12
+    # print(storage_requirement([Contact(0, 3, 0), Contact(3, 4, 0), Contact(2, 7, 0)]))
+    assert storage_requirement([Contact(0, 3, 0), Contact(3, 4, 0), Contact(2, 7, 0)]) == 1
+
+    # Example 6.13
+    # print(storage_requirement([Contact(0, 3, 0), Contact(3, 7, 0), Contact(2, 4, 0), Contact(8, 11, 0)]))
+    assert storage_requirement([Contact(0, 3, 0), Contact(3, 7, 0), Contact(2, 4, 0), Contact(8, 11, 0)]) == 6
+
+def maximum_start_adjusted(sequence: List[Contact]) -> float:
+
+    cumulant_delay, start_adjusted, end_adjusted = calculate_adjusted_variables(sequence)
+    
+    return max(start_adjusted)
+
+def total_delay(sequence: List[Contact]) -> float:
+    cumulant_delay, start_adjusted, end_adjusted = calculate_adjusted_variables(sequence)
+
+    return sum(cumulant_delay)
+
+def sequence_to_nevada(sequence: List[Contact]) -> Type[Nevada]:
+    tau = maximum_transmission_duration(sequence)
+    v = storage_requirement(sequence, tau)
+    
+    cumulant_delay, start_adjusted, end_adjusted = calculate_adjusted_variables(sequence)
+
+    E = min([end_adjusted[:-1]])
+    S = max(start_adjusted)
+
+    epsilon = end_adjusted[-1]
+    sigma = start_adjusted[0]
+    Omega = sum(cumulant_delay)
+
+    return Nevada(Contact(sigma, min(E, epsilon), 0), Contact(S, epsilon, Omega), Storage())
+
+def sequence_get_entry(sequence: List[Contact], i: float, j: float) -> float:
+    tau = maximum_transmission_duration(sequence)
+    
+    cumulant_delay, start_adjusted, end_adjusted = calculate_adjusted_variables(sequence)
+
+    E = min([end_adjusted[:-1]])
+    epsilon = end_adjusted[-1]
+    sigma = start_adjusted[0]
+
+    return min([tau, E - i, epsilon - j])
+
+def sequence_get_storage(sequence: List[Contact], t: float) -> float:
+    pass
 
 class Sum():
 
