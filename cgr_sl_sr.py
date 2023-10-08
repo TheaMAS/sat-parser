@@ -649,26 +649,34 @@ p_std = Product(sequence_standard)
 # print(n)
 # print(n.get_ascii_diagram(size))
 
-class ContactSequence():
+class ContactSequenceSummary():
 
-    def __init__(self, sequence: List[Contact]):
+    def __init__(self, tau, nu, E, S, epsilon, sigma, omega):
 
-        self.tau = tau
-        self.nu = nu
-        self.E = E
-        self.S = S
-        self.epsilon = epsilon
-        self.sigma = sigma
-        self.omega = omega
-        pass
+        self.tau = tau # maximum throughput
+        self.nu = nu # storage requirement
+        self.E = E # adjusted end times not including last
+        self.S = S # maximum adjusted start time
+        self.epsilon = epsilon # final adjusted end time
+        self.sigma = sigma # first (adjusted) start time
+        self.omega = omega # total delay
 
     def __mul__(self, other):
-        pass
+
+        tau = min(self.tau, other.tau, min(other.E, other.epsilon) - self.omega - self.S)
+        E = min(self.E, self.epsilon, other.E - self.omega)
+        S = max(self.S, other.S - self.omega)
+        epsilon = other.epsilon - self.omega
+        sigma = self.sigma
+        omega = self.omega + other.omega
+        nu = max(0, tau - E + S)
+
+        return ContactSequenceSummary(tau, nu, E, S, epsilon, sigma, omega)
 
     def get_entry(self, i: float, j: float) -> float:
-        # TODO
-        tau = min(self.tau, other.tau, min(other.E, other.epsilon) - self.omega - self.S)
-        pass
+        # TODO : check if its within the nevada, otherwise return zero
+
+        return min(self.tau, self.E - i, self.epsilon - j)
 
     def to_nevada(self) -> Type[Nevada]:
         return Nevada(
@@ -677,6 +685,173 @@ class ContactSequence():
             Storage()
         )
 
+
+class ContactSequence():
+
+    def __init__(self, sequence: List[Contact]):
+        self.sequence = sequence
+        # maybe calculate adjusted variables here for future use
+
+        n = len(sequence)
+
+        cumulant_delay = [sequence[0].delay]
+        start_adjusted = [sequence[0].start]
+        end_adjusted = [sequence[0].end]
+
+        for l in range(1, n):
+            # calculate cumulant_delay[i]
+            delay = sequence[l].delay + cumulant_delay[-1]
+            cumulant_delay.append(delay)
+
+            # calculate start_adjusted[i]
+            start = sequence[l].start - cumulant_delay[l - 1]
+            start_adjusted.append(start)
+
+            # calculate end_adjusted[i]
+            end = sequence[l].end - cumulant_delay[l - 1]
+            end_adjusted.append(end)
+
+        self.cumulant_delay = cumulant_delay
+        self.start_adjusted = start_adjusted
+        self.end_adjusted = end_adjusted
+
+    def get_tau(self) -> float:
+        """Returns the maximum throughput `tau` of the sequence."""
+        start_adjusted = self.start_adjusted
+        end_adjusted = self.end_adjusted
+
+        return min([end - max(start_adjusted[:k+1], default=0) for k, end in enumerate(end_adjusted)])
+
+    def get_nu(self, tau: float = None) -> float:
+        """Returns the storage requirement `nu` of the sequence."""
+        if tau == None:
+            tau = self.get_tau()
+        
+        start_adjusted = self.start_adjusted
+        end_adjusted = self.end_adjusted
+
+        return max(0, tau - min(end_adjusted[:-1]) + max(start_adjusted))
+
+    def get_E(self) -> float:
+        """Returns minimum of adjusted end times `E`, not including the last one."""
+        return min(self.end_adjusted[:-1])
+
+    def get_S(self) -> float:
+        """Returns the maximum adjusted start time `S`."""
+        return max(self.start_adjusted)
+
+    def get_epsilon(self) -> float:
+        """Returns the final adjusted end time `epsilon`."""
+        return self.end_adjusted[-1]
+
+    def get_sigma(self) -> float:
+        """Returns the first adjusted start time `sigma`."""
+        return self.start_adjusted[0]
+
+    def get_omega(self) -> float:
+        """Returns the total delay `omega`"""
+        return sum(self.omega)
+
+    def get_gamma(self, i: int) -> float:
+        """Returns gamma_i for i = 0,1,...,n-1"""
+
+        # TODO : double check if n is valid
+
+        n = len(self.sequence)
+        assert 0 <= i and i < n # validate input
+
+        tau = self.get_tau()
+        E = self.get_E()
+
+        gamma = 0
+
+        if i == 0:
+            # print(f"gamma_0 = max(0, {tau} - {E} + {max(self.start_adjusted[0], self.start_adjusted[1])})")
+            gamma = max(0, tau - E + max(self.start_adjusted[0], self.start_adjusted[1]))
+        else:
+            # print(f"gamma_{i} = max(0, {tau} - {E} + {max(self.start_adjusted[:i + 2])}) + max(0, {tau} - { min(self.end_adjusted[i:-1])} + { max(self.start_adjusted)})")
+            gamma = max(0, tau - E + max(self.start_adjusted[:i + 2])) + \
+                max(0, tau - min(self.end_adjusted[i:-1]) + max(self.start_adjusted))
+
+        # print(f"start_adj={self.start_adjusted}")
+        # print(f"    start_adjusted[:{i}+1]={self.start_adjusted[:i + 2]}")
+        # print(f"end_adj={self.end_adjusted}")
+
+        return gamma
+
+    def get_alpha_bounds(self, i: int) -> float:
+        """Returns lower bounds for alpha_i for i = 0,1,...,n-1; 
+            storage capacity of S_{alpha_i}"""
+        
+        # TODO : double check if n is valid
+        n = len(self.sequence)
+        assert 0 <= i and i < n # validate input
+
+        if i == 0:
+            return self.get_gamma(0)
+        else:
+            return max(0, self.get_gamma(i) - self.get_nu())
+
+        pass
+
+    def to_nevada(self) -> Type[Nevada]:
+        return self.to_summary().to_nevada()
+
+    def to_summary(self) -> Type[ContactSequenceSummary]:
+        tau = self.get_tau()
+        nu = self.get_nu(tau)
+        E = self.get_E()
+        S = self.get_S()
+        epsilon = self.get_epsilon()
+        sigma = self.get_sigma()
+        omega = self.get_omega()
+
+        return ContactSequenceSummary(tau, nu, E, S, epsilon, sigma, omega)
+
+if __name__ == "__main__":
+
+    # Example 6.12
+    cs = ContactSequence([Contact(0, 3, 0), Contact(3, 4, 0), Contact(2, 7, 0)])
+    assert cs.get_tau() == 1
+    assert cs.get_nu() == 1
+    
+    gamma = [1, 1] # TODO : check with Billy; different from paper
+    alpha = [1, 0]
+    for i in range(2):
+        assert cs.get_gamma(i) == gamma[i]
+        assert cs.get_alpha_bounds(i) == alpha[i]
+        # print(f"alpha_{i} = {cs.get_alpha(i)}")
+        # print(f"gamma_{i} = {cs.get_gamma(i)}")
+
+    # Example 6.13
+    cs = ContactSequence([Contact(0, 3, 0), Contact(3, 7, 0), Contact(2, 4, 0), Contact(8, 11, 0)])
+    assert cs.get_tau() == 1
+    assert cs.get_nu() == 6
+    
+    gamma = [1, 6, 11]
+    alpha = [1, 0, 5]
+    for i in range(3):
+        assert cs.get_gamma(i) == gamma[i]
+        assert cs.get_alpha_bounds(i) == alpha[i]
+        # print(f"alpha_{i} = {cs.get_alpha(i)}")
+        # print(f"alpha_{i} = {max(0, cs.get_gamma(i) - sum())}")
+        # pass
+        # print(f"gamma_{i} = {cs.get_gamma(i)}")
+
+    # Example 6.14
+    cs = ContactSequence([Contact(0, 1, 0), Contact(1, 3, 0), Contact(1, 3, 0), Contact(2, 3, 0)])
+    assert cs.get_tau() == 1
+    assert cs.get_nu() == 2
+
+    gamma = [1, 1, 2]
+    alpha = [1, 0, 0]
+    for i in range(3):
+        assert cs.get_gamma(i) == gamma[i]
+        assert cs.get_alpha_bounds(i) == alpha[i]
+        # print(f"alpha_{i} = {cs.get_alpha(i)}")
+        # pass
+        # print(f"gamma_{i} = {cs.get_gamma(i)}")
+    
 
 def calculate_adjusted_variables(sequence: List[Type[Contact]]) -> Tuple[List[float]]:
 
@@ -728,13 +903,13 @@ def maximum_transmission_duration(sequence: List[Contact]) -> float:
 
     return min([end - max(start_adjusted[:k+1], default=0) for k, end in enumerate(end_adjusted)])
 
-# `maximum_transmission_duration` function unit tests
-if __name__ == "__main__":
-    # Example 6.12
-    assert maximum_transmission_duration([Contact(0, 3, 0), Contact(3, 4, 0), Contact(2, 7, 0)]) == 1
+# # `maximum_transmission_duration` function unit tests
+# if __name__ == "__main__":
+#     # Example 6.12
+#     assert maximum_transmission_duration([Contact(0, 3, 0), Contact(3, 4, 0), Contact(2, 7, 0)]) == 1
 
-    # Example 6.13
-    assert maximum_transmission_duration([Contact(0, 3, 0), Contact(3, 7, 0), Contact(2, 4, 0), Contact(8, 11, 0)]) == 1
+#     # Example 6.13
+#     assert maximum_transmission_duration([Contact(0, 3, 0), Contact(3, 7, 0), Contact(2, 4, 0), Contact(8, 11, 0)]) == 1
 
 def storage_requirement(sequence: List[Contact], tau = None) -> float:
 
