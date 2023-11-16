@@ -384,11 +384,14 @@ def add_distances_view(targets_text, step_size, name, duration):
 
 TODAY = date.today()
 
-def generate_orb(satellites, name, date=TODAY):
+def generate_orb(satellites, name, date=TODAY, step_size=3600, duration=86400):
 	text = ""
 
-	step_size = 3600 # every hour for now
-	duration = 86400 # duration of the simulation in seconds.
+	# step_size = 3600 # every hour for now
+	# duration = 86400 # duration of the simulation in seconds.
+
+	# step_size = 3600 # every hour for now
+	# duration = 86400 * 365 * 2 # duration of the simulation in seconds.
 
 	generate_coordinates = False
 
