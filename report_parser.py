@@ -65,6 +65,9 @@ def contact_analysis_parser_v15(content):
 	"""
 	logger.info("Running `contact_analysis_parser_v15`")
 
+	# special case 
+	content = content.replace(" sees ", " - ")
+
 	content = content.split("Analysis,")[1]
 	lines = content.split("\n")
 
@@ -238,7 +241,7 @@ def construct_graph(contact_plan, delta = 1):
 		# print(contact["connection"])
 	return {"nodes" : nodes, "edges" : edges}
 
-# TODO : add description; rename : `graph_to_matrix`
+# TODO : add description; rename : `graph_to_matrix`; `tvg_to_interval_matrix`
 def soap_converter(filename):
     contact_plan = contact_analysis_parser(filename)
     graph = construct_graph(contact_plan)
@@ -422,6 +425,12 @@ def distances_report_parser(filename):
 	content = ""
 	with open(filename) as f:
 		content = f.read()
+
+	# special case
+	content = content.replace("Dist ", "Distance ")
+	content = content.replace(" to ", " - ")
+	content = content.replace(" sees ", " - ")
+	content = content.replace("km\n", "km,\n")
 
 	indices = None
 	lines = content.split("\n")
