@@ -15,7 +15,7 @@ def intersect(intervals : List[P.Interval]):
 
     return interval
 
-def get__ascii_diagram(element, start: float, end: float, step: float = 1) -> str:
+def get_ascii_diagram(element, start: float, end: float, step: float = 1) -> str:
     # element must implment `get_entry(i, j)`
 
     indices = [round(start + delta * step, 3) for delta in range(int((end - start) / step) + 1)]
@@ -34,6 +34,23 @@ def get__ascii_diagram(element, start: float, end: float, step: float = 1) -> st
         diagram += "\n"
 
     return diagram
+
+import matplotlib.pyplot as plt
+
+def get_heat_map(element, start: float, end: float, step: float = 1):
+    indices = [round(start + delta * step, 3) for delta in range(int((end - start) / step) + 1)]
+
+    array = [[] for k in indices]
+    for idx, i in enumerate(indices):
+        for idy, j in enumerate(indices):
+            value = element.get_entry(i, j)
+            array[idx].append(value)
+    
+    plt.imshow(array, cmap='hot', interpolation='nearest')
+    plt.axis('off')
+    plt.show()
+
+    return array
 
 class Contact():
     
@@ -83,6 +100,13 @@ class Contact():
         end = min(self.end, other.end - self.delay)
         delay = self.delay + other.delay
 
+        if end - start < 0:
+            # print("empty interval")
+            start = 0
+            end = 0
+            delay = 0
+
+        # print(f"{self} * {other} : {start} -- {end}")
         return Contact(start, end, delay)
 
     def __str__(self):
@@ -146,7 +170,7 @@ class Storage():
         return f"S_({self.capacity})"
 
     def get_entry(self, i: float, j: float) -> float:
-        if i <= j and j <= self.capacity:
+        if i <= j and j <= i + self.capacity:
             return INF
         else:
             return 0
@@ -183,19 +207,23 @@ class Nevada():
         #     Storage(storage.capacity)
         # )
 
-        standard_form = (
-            Contact(
+        left_contact = Contact(0, 0, 0)
+        if left.start <  min(left.end, right.end - left.delay):
+            left_contact = Contact(
                 left.start, 
                 min(left.end, right.end - left.delay), 
                 0
-            ),
-            Contact(
+            )
+
+        right_contact = Contact(0, 0, 0)
+        if max(left.start, right.start - left.delay) < right.end - left.delay:
+            right_contact = Contact(
                 max(left.start, right.start - left.delay), 
                 right.end - left.delay, 
                 left.delay + right.delay
-            ),
-            Storage(storage.capacity)
-        )
+            )
+
+        standard_form = (left_contact, right_contact, Storage(storage.capacity))
 
         return standard_form
 
@@ -438,6 +466,8 @@ if __name__ == "__main__":
     assert set([(2, 3), (8, 9), (2, 5), (8, 11)]) == set(Nevada(Contact(2, 8, 1), c, Storage(2)).get_boundary())
 
     # boundary c * S_alpha * c'; alpha < inf
+    # n = Nevada(Contact(2, 6, 0), Contact(3, 7, 2), Storage(2))
+    # get_heat_map(n, 1, 10, 0.05)
     assert set([(6, 8), (2, 6), (5, 9), (2, 5), (6, 9), (3, 5)]) == set(Nevada(Contact(2, 6, 0), Contact(3, 7, 2), Storage(2)).get_boundary())
 
     # start, end = 1, 10
@@ -445,10 +475,12 @@ if __name__ == "__main__":
     # boundary points : S_(inf)
     # c = Contact.identity()
     # S = Storage(2)
+    # get_heat_map(c, 1, 10, 0.5)
     # n = Nevada(Contact(2, 6, 1), Contact(4, 8, 1), S)
     # n = Nevada(Contact(2, 6, 0), Contact(3, 7, 2), S)
     # n = Nevada.standard_form(n.left, n.right, n.storage)
     # print(n)
+    # get_heat_map(n, 1, 10, 0.05)
     # print(n.get_ascii_diagram(start, end, step=0.5))
     # print(n.get_boundary())
     # print(n.contains_point(-INF, -INF))
@@ -459,7 +491,7 @@ if __name__ == "__main__":
 
 # exit()
 
-generator_types = Type[Contact] | Type[Contact] | Type[Nevada]
+generator_types = Type[Contact] | Type[Storage] | Type[Nevada]
 
 class Product():
 
@@ -477,15 +509,26 @@ class Product():
             text += f"{e} "
         return text
 
+    def __mul__(self, other):
+        return Product(self.sequence + other.sequence)
+
+    def __str__(self):
+        sequence = [f"{s}" for s in self.sequence]
+        return ",".join(sequence)
+
+    def __getitem__(self, index):
+        return self.sequence[index]
+
     def evaluate(self) -> Type[Contact] | Type[Nevada]:
+        # TODO : why wrap in product? so matrix multiplication seemless
         if len(self.sequence) < 2:
-            return self.sequence[0]
+            return Product([self.sequence[0]])
 
         element = self.sequence[0]
         for e in self.sequence[1:]:
             element = Product.multiply(element, e)
         
-        return element
+        return Product([element])
 
     def is_standard_form(self) -> bool:
 
@@ -598,56 +641,59 @@ class Product():
                 # print("Both are Contacts")
                 return x * y
 
-size = 25
-sequence = [
-    Contact(0, 10, 5),
-    Storage(),
-    Storage(),
-    Contact(3, 6, 2),
-    Storage(),
-    Contact(1, 8, 1),
-    Contact(0, 8, 2)
-]
+# `Product` class unit tests
+if __name__ == "__main__":
 
-sequence_standard = [
-    Contact(0, 10, 5),
-    Storage(),
-    Contact(3, 6, 2),
-    Storage(),
-    Contact(1, 7, 3)
-]
+    size = 25
+    sequence = [
+        Contact(0, 10, 5),
+        Storage(),
+        Storage(),
+        Contact(3, 6, 2),
+        Storage(),
+        Contact(1, 8, 1),
+        Contact(0, 8, 2)
+    ]
 
-sequence_standard = [
-    Contact(0, 10, 2),
-    Storage(),
-    Contact.identity()
-]
-n = Nevada(Contact(0, 10, 2), Contact.identity(), Storage())
+    sequence_standard = [
+        Contact(0, 10, 5),
+        Storage(),
+        Contact(3, 6, 2),
+        Storage(),
+        Contact(1, 7, 3)
+    ]
 
-# p = Product(sequence)
-# print(p)
-# q = p.evaluate()
-# print(q)
+    sequence_standard = [
+        Contact(0, 10, 2),
+        Storage(),
+        Contact.identity()
+    ]
+    n = Nevada(Contact(0, 10, 2), Contact.identity(), Storage())
 
-print(Product(sequence_standard).evaluate())
-print(n)
-# exit()
+    # p = Product(sequence)
+    # print(p)
+    # q = p.evaluate()
+    # print(q)
 
-p_std = Product(sequence_standard)
+    # print(Product(sequence_standard).evaluate())
+    # print(n)
+    # exit()
 
-# print(Product(sequence_standard).evaluate())
-# s = 10
-# for i in range(s):
-    # for j in range(s):
-        # print(f"p({i}, {j}) = {q.get_entry(i, j)}, p'({i}, {j}) = {p_std.evaluate_std(i, j)}")
-        # print(f"n({i}, {j}) = {n.get_entry(i, j)}, p'({i}, {j}) = {p_std.evaluate_std(i, j)}")
+    p_std = Product(sequence_standard)
+
+    # print(Product(sequence_standard).evaluate())
+    # s = 10
+    # for i in range(s):
+        # for j in range(s):
+            # print(f"p({i}, {j}) = {q.get_entry(i, j)}, p'({i}, {j}) = {p_std.evaluate_std(i, j)}")
+            # print(f"n({i}, {j}) = {n.get_entry(i, j)}, p'({i}, {j}) = {p_std.evaluate_std(i, j)}")
 
 
-# p.get_standard_form()
-# print(q.get_ascii_diagram(size))
-# n = Nevada.standard_form(q.left, q.right, q.storage)
-# print(n)
-# print(n.get_ascii_diagram(size))
+    # p.get_standard_form()
+    # print(q.get_ascii_diagram(size))
+    # n = Nevada.standard_form(q.left, q.right, q.storage)
+    # print(n)
+    # print(n.get_ascii_diagram(size))
 
 class ContactSequenceSummary():
 
@@ -675,6 +721,7 @@ class ContactSequenceSummary():
 
     def get_entry(self, i: float, j: float) -> float:
         # TODO : check if its within the nevada, otherwise return zero
+        # negative if outside, make zero (double check)
 
         return min(self.tau, self.E - i, self.epsilon - j)
 
@@ -694,6 +741,7 @@ class ContactSequence():
 
         n = len(sequence)
 
+        # calculate adjusted variables
         cumulant_delay = [sequence[0].delay]
         start_adjusted = [sequence[0].start]
         end_adjusted = [sequence[0].end]
@@ -750,7 +798,7 @@ class ContactSequence():
 
     def get_omega(self) -> float:
         """Returns the total delay `omega`"""
-        return sum(self.omega)
+        return sum(self.cumulant_delay)
 
     def get_gamma(self, i: int) -> float:
         """Returns gamma_i for i = 0,1,...,n-1"""
@@ -791,8 +839,6 @@ class ContactSequence():
             return self.get_gamma(0)
         else:
             return max(0, self.get_gamma(i) - self.get_nu())
-
-        pass
 
     def to_nevada(self) -> Type[Nevada]:
         return self.to_summary().to_nevada()
@@ -853,55 +899,55 @@ if __name__ == "__main__":
         # print(f"gamma_{i} = {cs.get_gamma(i)}")
     
 
-def calculate_adjusted_variables(sequence: List[Type[Contact]]) -> Tuple[List[float]]:
+# def calculate_adjusted_variables(sequence: List[Type[Contact]]) -> Tuple[List[float]]:
 
-    n = len(sequence)
+#     n = len(sequence)
 
-    cumulant_delay = [sequence[0].delay]
-    start_adjusted = [sequence[0].start]
-    end_adjusted = [sequence[0].end]
+#     cumulant_delay = [sequence[0].delay]
+#     start_adjusted = [sequence[0].start]
+#     end_adjusted = [sequence[0].end]
 
-    for l in range(1, n):
-        # calculate cumulant_delay[i]
-        delay = sequence[l].delay + cumulant_delay[-1]
-        cumulant_delay.append(delay)
+#     for l in range(1, n):
+#         # calculate cumulant_delay[i]
+#         delay = sequence[l].delay + cumulant_delay[-1]
+#         cumulant_delay.append(delay)
 
-        # calculate start_adjusted[i]
-        start = sequence[l].start - cumulant_delay[l - 1]
-        start_adjusted.append(start)
+#         # calculate start_adjusted[i]
+#         start = sequence[l].start - cumulant_delay[l - 1]
+#         start_adjusted.append(start)
 
-        # calculate end_adjusted[i]
-        end = sequence[l].end - cumulant_delay[l - 1]
-        end_adjusted.append(end)
+#         # calculate end_adjusted[i]
+#         end = sequence[l].end - cumulant_delay[l - 1]
+#         end_adjusted.append(end)
 
-    return cumulant_delay, start_adjusted, end_adjusted
+#     return cumulant_delay, start_adjusted, end_adjusted
 
-def maximum_transmission_duration(sequence: List[Contact]) -> float:
-    """Given a sequence of contacts `[c_1,...,c_n]`, 
-        returns the maximum transission duration.""" 
+# def maximum_transmission_duration(sequence: List[Contact]) -> float:
+#     """Given a sequence of contacts `[c_1,...,c_n]`, 
+#         returns the maximum transission duration.""" 
         
-    # n = len(sequence)
+#     # n = len(sequence)
 
-    cumulant_delay, start_adjusted, end_adjusted = calculate_adjusted_variables(sequence)
+#     cumulant_delay, start_adjusted, end_adjusted = calculate_adjusted_variables(sequence)
 
-    # cumulant_delay = [sequence[0].delay]
-    # start_adjusted = [sequence[0].start]
-    # end_adjusted = [sequence[0].end]
+#     # cumulant_delay = [sequence[0].delay]
+#     # start_adjusted = [sequence[0].start]
+#     # end_adjusted = [sequence[0].end]
 
-    # for l in range(1, n):
-    #     # calculate cumulant_delay[i]
-    #     delay = sequence[l].delay + cumulant_delay[-1]
-    #     cumulant_delay.append(delay)
+#     # for l in range(1, n):
+#     #     # calculate cumulant_delay[i]
+#     #     delay = sequence[l].delay + cumulant_delay[-1]
+#     #     cumulant_delay.append(delay)
 
-    #     # calculate start_adjusted[i]
-    #     start = sequence[l].start - cumulant_delay[l - 1]
-    #     start_adjusted.append(start)
+#     #     # calculate start_adjusted[i]
+#     #     start = sequence[l].start - cumulant_delay[l - 1]
+#     #     start_adjusted.append(start)
 
-    #     # calculate end_adjusted[i]
-    #     end = sequence[l].end - cumulant_delay[l - 1]
-    #     end_adjusted.append(end)
+#     #     # calculate end_adjusted[i]
+#     #     end = sequence[l].end - cumulant_delay[l - 1]
+#     #     end_adjusted.append(end)
 
-    return min([end - max(start_adjusted[:k+1], default=0) for k, end in enumerate(end_adjusted)])
+#     return min([end - max(start_adjusted[:k+1], default=0) for k, end in enumerate(end_adjusted)])
 
 # # `maximum_transmission_duration` function unit tests
 # if __name__ == "__main__":
@@ -911,93 +957,337 @@ def maximum_transmission_duration(sequence: List[Contact]) -> float:
 #     # Example 6.13
 #     assert maximum_transmission_duration([Contact(0, 3, 0), Contact(3, 7, 0), Contact(2, 4, 0), Contact(8, 11, 0)]) == 1
 
-def storage_requirement(sequence: List[Contact], tau = None) -> float:
+# def storage_requirement(sequence: List[Contact], tau = None) -> float:
 
-    if tau == None:
-        tau = maximum_transmission_duration(sequence)
+#     if tau == None:
+#         tau = maximum_transmission_duration(sequence)
 
-    cumulant_delay, start_adjusted, end_adjusted = calculate_adjusted_variables(sequence)
+#     cumulant_delay, start_adjusted, end_adjusted = calculate_adjusted_variables(sequence)
 
-    # n = len(sequence)
+#     # n = len(sequence)
 
-    # cumulant_delay = [sequence[0].delay]
-    # start_adjusted = [sequence[0].start]
-    # end_adjusted = [sequence[0].end]
+#     # cumulant_delay = [sequence[0].delay]
+#     # start_adjusted = [sequence[0].start]
+#     # end_adjusted = [sequence[0].end]
 
-    # for l in range(1, n):
-    #     # calculate cumulant_delay[i]
-    #     delay = sequence[l].delay + cumulant_delay[-1]
-    #     cumulant_delay.append(delay)
+#     # for l in range(1, n):
+#     #     # calculate cumulant_delay[i]
+#     #     delay = sequence[l].delay + cumulant_delay[-1]
+#     #     cumulant_delay.append(delay)
 
-    #     # calculate start_adjusted[i]
-    #     start = sequence[l].start - cumulant_delay[l - 1]
-    #     start_adjusted.append(start)
+#     #     # calculate start_adjusted[i]
+#     #     start = sequence[l].start - cumulant_delay[l - 1]
+#     #     start_adjusted.append(start)
 
-    #     # calculate end_adjusted[i]
-    #     end = sequence[l].end - cumulant_delay[l - 1]
-    #     end_adjusted.append(end)
+#     #     # calculate end_adjusted[i]
+#     #     end = sequence[l].end - cumulant_delay[l - 1]
+#     #     end_adjusted.append(end)
 
-    # print(f"max(0, {tau} - {min(end_adjusted[:-1])} + {max(start_adjusted)})")
-    # return max(0, tau - min(end + max(start_adjusted[:l+1]) for l, end in enumerate(end_adjusted[:-1])))
-    return max(0, tau - min(end_adjusted[:-1]) + max(start_adjusted))
+#     # print(f"max(0, {tau} - {min(end_adjusted[:-1])} + {max(start_adjusted)})")
+#     # return max(0, tau - min(end + max(start_adjusted[:l+1]) for l, end in enumerate(end_adjusted[:-1])))
+#     return max(0, tau - min(end_adjusted[:-1]) + max(start_adjusted))
 
 # `storage_requirement` function unit tests
-if __name__ == "__main__":
-    # Example 6.12
-    # print(storage_requirement([Contact(0, 3, 0), Contact(3, 4, 0), Contact(2, 7, 0)]))
-    assert storage_requirement([Contact(0, 3, 0), Contact(3, 4, 0), Contact(2, 7, 0)]) == 1
+# if __name__ == "__main__":
+#     # Example 6.12
+#     # print(storage_requirement([Contact(0, 3, 0), Contact(3, 4, 0), Contact(2, 7, 0)]))
+#     assert storage_requirement([Contact(0, 3, 0), Contact(3, 4, 0), Contact(2, 7, 0)]) == 1
 
-    # Example 6.13
-    # print(storage_requirement([Contact(0, 3, 0), Contact(3, 7, 0), Contact(2, 4, 0), Contact(8, 11, 0)]))
-    assert storage_requirement([Contact(0, 3, 0), Contact(3, 7, 0), Contact(2, 4, 0), Contact(8, 11, 0)]) == 6
+#     # Example 6.13
+#     # print(storage_requirement([Contact(0, 3, 0), Contact(3, 7, 0), Contact(2, 4, 0), Contact(8, 11, 0)]))
+#     assert storage_requirement([Contact(0, 3, 0), Contact(3, 7, 0), Contact(2, 4, 0), Contact(8, 11, 0)]) == 6
 
-def maximum_start_adjusted(sequence: List[Contact]) -> float:
+# def maximum_start_adjusted(sequence: List[Contact]) -> float:
 
-    cumulant_delay, start_adjusted, end_adjusted = calculate_adjusted_variables(sequence)
+#     cumulant_delay, start_adjusted, end_adjusted = calculate_adjusted_variables(sequence)
     
-    return max(start_adjusted)
+#     return max(start_adjusted)
 
-def total_delay(sequence: List[Contact]) -> float:
-    cumulant_delay, start_adjusted, end_adjusted = calculate_adjusted_variables(sequence)
+# def total_delay(sequence: List[Contact]) -> float:
+#     cumulant_delay, start_adjusted, end_adjusted = calculate_adjusted_variables(sequence)
 
-    return sum(cumulant_delay)
+#     return sum(cumulant_delay)
 
-def sequence_to_nevada(sequence: List[Contact]) -> Type[Nevada]:
-    tau = maximum_transmission_duration(sequence)
-    v = storage_requirement(sequence, tau)
+# def sequence_to_nevada(sequence: List[Contact]) -> Type[Nevada]:
+#     tau = maximum_transmission_duration(sequence)
+#     v = storage_requirement(sequence, tau)
     
-    cumulant_delay, start_adjusted, end_adjusted = calculate_adjusted_variables(sequence)
+#     cumulant_delay, start_adjusted, end_adjusted = calculate_adjusted_variables(sequence)
 
-    E = min([end_adjusted[:-1]])
-    S = max(start_adjusted)
+#     E = min([end_adjusted[:-1]])
+#     S = max(start_adjusted)
 
-    epsilon = end_adjusted[-1]
-    sigma = start_adjusted[0]
-    Omega = sum(cumulant_delay)
+#     epsilon = end_adjusted[-1]
+#     sigma = start_adjusted[0]
+#     Omega = sum(cumulant_delay)
 
-    return Nevada(Contact(sigma, min(E, epsilon), 0), Contact(S, epsilon, Omega), Storage())
+#     return Nevada(Contact(sigma, min(E, epsilon), 0), Contact(S, epsilon, Omega), Storage())
 
-def sequence_get_entry(sequence: List[Contact], i: float, j: float) -> float:
-    tau = maximum_transmission_duration(sequence)
+# def sequence_get_entry(sequence: List[Contact], i: float, j: float) -> float:
+#     tau = maximum_transmission_duration(sequence)
     
-    cumulant_delay, start_adjusted, end_adjusted = calculate_adjusted_variables(sequence)
+#     cumulant_delay, start_adjusted, end_adjusted = calculate_adjusted_variables(sequence)
 
-    E = min([end_adjusted[:-1]])
-    epsilon = end_adjusted[-1]
-    sigma = start_adjusted[0]
+#     E = min([end_adjusted[:-1]])
+#     epsilon = end_adjusted[-1]
+#     sigma = start_adjusted[0]
 
-    return min([tau, E - i, epsilon - j])
+#     return min([tau, E - i, epsilon - j])
 
-def sequence_get_storage(sequence: List[Contact], t: float) -> float:
-    pass
+# def sequence_get_storage(sequence: List[Contact], t: float) -> float:
+#     pass
+
+# TODO : write iterator for Sum class.
 
 class Sum():
 
-    def __init__(self, elements):
+    def __init__(self, elements: List[Type[Product]], epsilon: float = 0):
         self.elements = elements
+
+        # here delete if < epsilon
+        if epsilon > 0:
+            elements_filtered = []
+            for e in self.elements:
+                # if e small, don't add
+                pass
+            pass
 
     def __add__(self, other):
         return Sum(self.elements + other.elements)
 
     def __mul__(self, other):
-        pass
+        # have to check the typeof the element.
+        # maybe just assume its the product type and use the built in 
+        #    multiply?
+        elements = []
+        for i in self.elements:
+            for j in other.elements:
+                # print(f"{i} * {j} : {type(i)} -- {type(j)}")
+                product = i * j
+                element = product.evaluate()
+                
+                elements.append(element)
+        return Sum(elements)
+
+    def __str__(self):
+        elements = [f"{e}" for e in self.elements]
+        text = ",".join(elements)
+        if len(elements) == 0:
+            text = "Zero Sum"
+        return text
+
+    def get_entry(self, i: float, j: float) -> float:
+        value = 0
+        for element in self.elements:
+            # print(f"{element} -- {type(element)}")
+            # print(f"{element.evaluate()} -- {type(element.evaluate())}")
+            value = max(value, (element.evaluate())[0].get_entry(i, j))
+        return value
+        
+
+# zero_sum = Sum([])
+
+if __name__ == "__main__":
+
+    c =  Product([Contact(1, 2, 5)])
+    cc = Product([Contact(0, 3, 4)])
+
+
+    s = Sum([c, Product([Storage(2)]), cc])
+
+    # get_heat_map(s, 0, 10, 0.05)
+
+class Matrix():
+
+    def __init__(self, n, m, array, zero, symmetric=False, epsilon=0):
+        self.dim_row = n
+        self.dim_col = m
+        self.array = array
+        self.zero = zero
+        self.symmetric = symmetric
+
+        self.epsilon = epsilon
+
+    def __getitem__(self, index):
+        return self.array[index[0]][index[1]]
+
+    def __setitem__(self, index, value):
+        self.array[index[0]][index[1]] = value
+
+    def __add__(self, other):
+        if self.dim_row != other.dim_row or self.dim_col != other.dim_col:
+            raise ValueError("Dimension Mismatch Error (in Addition)")
+            # print("Throw error : dimensions don't agree.")
+
+        array = self.empty_array(self.dim_row, self.dim_col, self.zero)
+        for i in range(self.dim_row):
+            for j in range(self.dim_col):
+                # TODO : self.get_element should be self.array[i][j] ?
+                array[i][j] = self.array[i][j] + other.array[i][j]
+
+        return Matrix(self.dim_row, self.dim_col, array, self.zero)
+
+    def __mul__(self, other):
+        if self.dim_col != other.dim_row:
+            raise ValueError("Dimension Mismatch Error (in Multiplication)")
+            # print("Throw error : dimensions don't agree.")
+
+        array = self.empty_array(self.dim_row, other.dim_col, self.zero)
+        for i in range(self.dim_row):
+            for j in range(other.dim_col):
+                array[i][j] = self.zero
+                # print(f"({i},{j}) = {array[i][j]}")
+                for k in range(self.dim_col):
+                    # product_k = self.array[i][k] * other.array[k][j]
+                    # print(f"{k}/{self.dim_col} : self.array[i][k] * other.array[k][j] = {self.array[i][k] * other.array[k][j]}")
+                    # check if new contacts too small
+                    array[i][j] = array[i][j] + (self.array[i][k] * other.array[k][j])
+        
+        return Matrix(self.dim_row, other.dim_col, array, self.zero)
+
+    def __str__(self):
+        strings = []
+        for i, row in enumerate(self.array):
+            for j, col in enumerate(row):
+                strings.append(f"({i}, {j})={col}")
+        return "\n".join(strings)
+
+    def get_array(self, start: float, end:float, step: float = 1):
+        """Returns matrix of semiring objects representing max of Sum objects."""
+
+        n = self.dim_row
+        m = self.dim_col
+
+        # indices = [round(start + delta * step, 3) for delta in range(int((end - start) / step) + 1)]
+        block_size = int((end - start) / step) + 1
+
+        # array = [[] for k in indices]
+        # for idx, i in enumerate(indices):
+        #     for idy, j in enumerate(indices):
+        #         value = element.get_entry(i, j)
+        #         array[idx].append(value)
+
+        array = [[0 for i in range(block_size * m)] for j in range(block_size * n)]
+
+        # submatrix calculations
+        for i in range(n):
+            for j in range(i, m):
+                # subarray insert code                
+                array_ij = get_heat_map(self.array[i][j], start, end, step)
+                Matrix.subarray_insert(array, array_ij, block_size * i, block_size * j)
+                # print(f"array[{i}, {j}] = {type(self.array[i][j])}; {len(array_ij)}x{len(array_ij[0])}")
+                
+
+        plt.imshow(array, cmap='hot', interpolation='nearest')
+        plt.axis('off')
+        plt.show()
+        return array
+
+    @staticmethod
+    def subarray_insert(array, subarray, s, t):
+        n = len(subarray)
+        m = len(subarray[0])
+        for i in range(n):
+            for j in range(m):
+                array[s + i][t + j] = subarray[i][j]
+
+    @staticmethod
+    def empty_array(n, m, zero):
+        return [[zero for j in range(m)] for i in range(n)]
+
+    @staticmethod
+    def empty_matrix(n, m, zero):
+        return Matrix(n, m, Matrix.empty_array(n, m, zero), zero)
+
+
+# Given a contact plan, the (i,j)-th entry corresponds to the sum of contacts
+#   between node i and node j.
+#   The diagonal is the storage object.
+import report_parser as rp
+
+SPEED_OF_LIGHT = 300000 # km / s
+
+def tvg_to_contact_matrix(filepath_ca, filepath_d, epsilon=INF):
+    
+    contact_plan = rp.contact_analysis_parser(filepath_ca)
+    tvg = rp.construct_graph(contact_plan, delta = 1)
+
+    distances = rp.distances_report_parser(filepath_d)
+
+    nodes = tvg["nodes"]
+    edges = tvg["edges"]
+
+    n = len(nodes)
+    zero_sum = Sum([])
+
+    matrix = Matrix.empty_matrix(n, n, zero_sum)
+
+    # set up diagonal to have storage
+    for i in range(n):
+        matrix[i, i] = Sum([Product([Storage()])])
+
+    for edge_key, edge_times in edges.items():
+        source, destination = edge_key.split(' - ')
+
+        for k in range(0, len(edge_times), 2):
+            rise_time = edge_times[k]
+            set_time = edge_times[k + 1]
+
+            i = nodes[source]
+            j = nodes[destination]
+
+            connection = edge_key
+            if connection not in distances[0]:
+                # print(f"!contains {edge_key}")
+                connection = f"{destination} - {source}"
+            # else:
+            #     print(f"contains {edge_key}")
+            # print(distances)
+
+            # average distance over contact time
+            # print(f"{distances[0][connection]} - {distances[86400][connection]}")
+            distance = (distances[0][connection] + distances[86400][connection]) / 2
+            delay = distance / SPEED_OF_LIGHT
+            delay = 0
+
+            c = Product([Contact(rise_time, set_time, delay)])
+            # delete if interval too small
+            matrix[i, j] = matrix[i, j] + Sum([c])
+            matrix[j, i] = matrix[j, i] + Sum([c])
+
+    return matrix
+
+
+    # for node in tvg["nodes"]:
+    #     print(node)
+
+    # for edge in tvg["edges"]:
+    #     print(edge)
+
+if __name__ == "__main__":
+
+    start = -20
+    stop = 86400
+    step = 3600 / 2
+
+    folder_base = "./outputs/experiments/semiring/"
+    filepath_ca = folder_base + "Contact Analysis.csv"
+    filepath_d = folder_base + "Distances.csv"
+
+    m = tvg_to_contact_matrix(filepath_ca, filepath_d)
+    # print(m + m)
+    # print(m * m)
+    # m2 = m * m
+    # print(n)
+    array = (m * m).get_array(start, stop, step)
+
+    # m4 = m * m * m
+    # for c in contact_plan:
+    #     print(c)
+
+    # for i in range(m.dim_row):
+    #     for j in range(m.dim_col):
+    #         print(f"m[{i}, {j}] = {m[i, j]}")
+
+# visualization code
+

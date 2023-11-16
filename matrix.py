@@ -277,7 +277,7 @@ class IntervalMatrix():
         # Returns an interval slice of the matrix
         return self * IntervalMatrix.bounded_identity_matrix(self.get_dimension()[1], I)
 
-    # TODO : test change
+    # TODO : test change; m, n flipped
     @staticmethod
     def empty_matrix(m, n):
         array = [[P.empty() for j in range(n)] for i in range(m)]
