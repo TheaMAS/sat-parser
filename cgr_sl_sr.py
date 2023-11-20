@@ -46,11 +46,20 @@ def get_heat_map(element, start: float, end: float, step: float = 1):
             value = element.get_entry(i, j)
             array[idx].append(value)
     
+    # plt.imshow(array, cmap='hot', interpolation='nearest')
+    # plt.axis('off')
+    # plt.show()
+
+    return array
+
+def plot_heat_map(element, start: float, end: float, step: float = 1):
+    array = get_heat_map(element, start, end, step)
+    
     plt.imshow(array, cmap='hot', interpolation='nearest')
     plt.axis('off')
     plt.show()
 
-    return array
+    return None
 
 class Contact():
     
@@ -328,6 +337,8 @@ class Nevada():
 
         if self.contains_point(i, j):
             value = min(self.left.end - i, self.right.end - j + self.right.delay)
+            
+        # TODO : fix; must include storage.
 
         return value
 
@@ -1279,7 +1290,7 @@ if __name__ == "__main__":
     # print(m * m)
     # m2 = m * m
     # print(n)
-    array = (m * m).get_array(start, stop, step)
+    # array = (m * m).get_array(start, stop, step)
 
     # m4 = m * m * m
     # for c in contact_plan:
@@ -1289,5 +1300,30 @@ if __name__ == "__main__":
     #     for j in range(m.dim_col):
     #         print(f"m[{i}, {j}] = {m[i, j]}")
 
-# visualization code
+    # simple example 2023-11-16
 
+    n = 4
+    zero_sum = Sum([])
+
+    start = -5
+    stop = 20
+    step = 0.5
+
+    matrix = Matrix.empty_matrix(n, n, zero_sum)
+
+    # set up diagonal to have storage
+    for i in range(n):
+        matrix[i, i] = Sum([Product([Storage()])])
+
+    matrix[0, 1] = Sum([Product([Contact(0, 1, 10)])])
+    matrix[0, 2] = Sum([Product([Contact(0, 1, 0)])])
+    matrix[1, 3] = Sum([Product([Contact(10, 11, 5)])])
+    matrix[2, 3] = Sum([Product([Contact(5, 6, 0)])])
+
+    a = matrix.get_array(start, stop, step)
+    m2 = matrix * matrix
+    a2 = (m2).get_array(start, stop, step)
+    a3 = (matrix * matrix * matrix).get_array(start, stop, step)
+    m4 = m2 * m2
+    a4 = (m4).get_array(start, stop, step)
+    a5 = (m4 * matrix).get_array(start, stop, step)
