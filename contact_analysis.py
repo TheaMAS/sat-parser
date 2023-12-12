@@ -173,6 +173,7 @@ if __name__ == "__main__":
 
 	# filename = "contact_simple.csv"
 	filename = "./outputs/starlink-7/starlink_6 Contact Analysis.csv"
+	filename= "./tests/csv/moongnd_base Contact Analysis.csv"
 	# filename = "./outputs/starlink-7/starlink_0 Contact Analysis.csv"
 	#
 	contact_plan = contact_analysis_parser(filename)
@@ -493,3 +494,69 @@ if __name__ == "__main__":
 	clique_complex = construct_clique_complex(graph)
 	# print(clique_complex)
 
+def create_json_contact(index, source, dest, start, end, rate, owlt):
+
+	contact = {
+		"contact" : index,
+		"source" : source,
+		"dest" : dest,
+		"startTime" : start,
+		"endTime" : end,
+		"rateBitsPerSec" : rate,
+		"owlt" : owlt
+	}
+
+	contact_list = [f'\t\t\t"{key}": {value}' for key, value in contact.items()]
+	content = ",\n".join(contact_list)
+
+	return "\t\t{\n" + content + "\n\t\t}"
+
+if __name__ == "__main__":
+	entry = create_json_contact(0, 102, 10, 0, 2000, 1000000000, 1)
+
+def tvg_to_json(graph):
+
+	nodes = graph["nodes"]
+	edges = graph["edges"]
+
+	contact_counter = 0
+	
+	entries = []
+	for edge_key, edge_times in edges.items():
+		edge_source, edge_destination = edge_key.split(" - ")
+
+		for i in range(0, len(edge_times), 2):
+			rise_time = edge_times[i]
+			set_time = edge_times[i + 1]
+
+			entry = create_json_contact(
+				contact_counter, 
+				nodes[edge_source], 
+				nodes[edge_destination], 
+				rise_time, 
+				set_time, 
+				1000000000, 
+				1
+			)
+			entries.append(entry)
+
+			entry = create_json_contact(
+				contact_counter + 1, 
+				nodes[edge_destination],
+				nodes[edge_source],  
+				rise_time, 
+				set_time, 
+				1000000000, 
+				1
+			)
+			entries.append(entry)
+
+			contact_counter += 2
+	content = ",\n".join(entries)
+	return '\t"contacts": [\n' + content + '\n\t]\n}\n'
+
+
+if __name__ == "__main__":
+	
+	content = tvg_to_json(graph)
+	print(content)
