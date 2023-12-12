@@ -7,10 +7,13 @@ import contact_analysis as ca
 import random
 from matrix import IntervalMatrix
 
+import scipy.signal as sg
+from scipy.signal import argrelextrema
+
 
 
 def get_max_interval_endpoint(input_interval):
-    print(input_interval)
+    # print(input_interval)
     ret = 0
     for interval in input_interval:
         dat = P.to_data(interval)[0][2]
@@ -26,6 +29,20 @@ def get_max_matrix_endpoint(input_matrix):
         for y in x:
             ret = max(ret, get_max_interval_endpoint(y))
     return ret
+
+def make_interval_periodic_vote(input_interval, periodicity):
+    subintervals = P.to_data(input_interval)
+    interval_vote = P.empty()
+
+    # TODO : finish 
+
+    for interval in subintervals:
+        print(interval)
+
+        # left = interval.lower
+        # right = interval.upper
+
+    pass
 
 def make_interval_periodic_union(input_interval, periodicity):
     dat = P.to_data(input_interval)
@@ -79,7 +96,7 @@ def open_cover(I, epsilon):
     for interval in I:
         dat = P.to_data(interval)
         for k in dat:
-            print(k)
+            # print(k)
             ret = ret.union(P.open(k[1]-epsilon, k[2]+epsilon))
     return ret
 
@@ -191,6 +208,8 @@ def unit_test_make_interval_periodic():
         #plt.close()
         plt.show()
 
+# unit_test_make_interval_periodic()
+
 
 def generate_boolean_support(number_of_intervals, left, right):
     return 0
@@ -290,9 +309,159 @@ def graph_periodic_intersection_over_various_periods(I, p_min, p_max, interval_m
 
     return 0
 
+def graph_contacts(interval, samples):
+    # todo : rewrite using list comprehension
+    y = []
+    for point in samples:
+        if point in interval:
+            y.append(1)
+        else:
+            y.append(0)
+    return y
+
+
+def graph_periodic_intersection_over_various_periods_updated(I, p_min, p_max, interval_max, p_increment, display_noise=False):
+
+
+    # I contains the support of a boolean function
+    # max is the end of the domain for I. It is the maximum value for which I records information.
+    # p_min is the minimum period
+    # p_increment is a float which indicates how to increase the period
+
+    # Suppose so I = 0[------(a---------b)------(c----d)-----]interval_max
+
+    # v2.0 should include phase shift
+
+    fig, axs = plt.subplots(4)
+    # fig = plt.figure()
+    # ax1 = fig.add_subplot(2, 1, 1)
+    # ax2 = fig.add_subplot(2, 1, 2, sharex=ax1)
+    # ax1.set_title("The periodic support")
+    # ax2.set_title("The periodic extensions")
+    # plt.ylabel("Period")
+    # plt.xlabel("Support")
+    # plt.xticks(range(0, interval_max+1))
+    # plt.yticks(range(p_min, p_max+1))
+
+
+    periods = np.linspace(p_min, p_max, (int)((p_max-p_min)/p_increment))
+
+    scatterx1 = []
+    scattery1 = []
+    scatterx2 = []
+    scattery2 = []
+
+    distances = []
+    interval = I
+    # max_endpoint = get_max_interval_endpoint(interval)
+    max_endpoint = 86400
+
+    # print(f"{len(periods)}")
+    for period in periods:
+
+        periodic_interval = make_interval_periodic_intersection(interval, period, max_endpoint)
+        periodic_expansion = make_periodic_extension_of_interval(periodic_interval, period, max_endpoint)
+        distances.append(idf.xor_distance(interval,periodic_expansion))
+
+    axs[0].plot(periods, graph_contacts(interval, periods))
+    axs[0].set_title("Original Contact")
+
+    # We get a triangular window with 60 samples.
+    h = sg.get_window('triang', 1)
+    # # We convolve the signal with this window.
+    fil = sg.convolve(distances, h / h.sum())
+    # # print(f"dist:{len(distances)} | fil:{len(fil)}")
+    peaks, _ = sg.find_peaks(-fil)
+    # print(peaks)
+    # peaks = argrelextrema(fil, np.less)
+    # print(peaks)
+
+    # period = random.choice(periods)
+    period = periods[peaks[0]]
+    periodic_interval = make_interval_periodic_intersection(interval, period, max_endpoint)
+    periodic_interval_vote = make_interval_periodic_vote(interval, period)
+    periodic_expansion = make_periodic_extension_of_interval(periodic_interval, period, max_endpoint)
+
+    axs[1].plot(periods, graph_contacts(periodic_expansion, periods))
+    axs[1].set_title(f"Periodic Interval {period} ({len(periods)} Samples)")
+
+    xor_interval = (interval | periodic_expansion) - (interval & periodic_expansion)
+    axs[2].plot(periods, graph_contacts(xor_interval, periods))
+    axs[2].set_title(f"XOR")
+    
+    # todo: plot initial interval : DONE
+    # plot the first periodic minimizer, first lower spike. plot extension : DONE
+    # plot xor of those : DONE
+    # few different simulations of these. preprocess simulations.
+    # visualize time extended matrices; brian's code
+    #
+    # build mvote code (m_min, m_max) count height of intervals if about halfway
+    # do for entire simulation; get first minimizing spike for each link
+    # can we come up with a way to look at poset of submatrices to find ones with high periodicity rating. getting highly periodic subnetworks
+
+    # # We get a triangular window with 60 samples.
+    h = sg.get_window('triang', 1)
+    # # # We convolve the signal with this window.
+    fil = sg.convolve(distances, h / h.sum())
+    # # # print(f"dist:{len(distances)} | fil:{len(fil)}")
+
+    # peaks, _ = sg.find_peaks(-fil)
+    # print(peaks)
+    peaks = argrelextrema(fil, np.less)
+    # # print(peaks)
+
+
+    axs[3].plot(periods,distances)
+    # axs[3].plot(periods, -fil)
+    axs[3].plot(periods[peaks][0], fil[peaks][0], "x")
+    # axs[2].set_title("L_1 Distance on the interval {}".format(interval))
+    axs[3].set_title("L_1 Distance on the interval")
+    # axs[2].xlabel("Induced Period")
+    # axs[2].ylabel("Distance from Original Interval")
+    #plt.savefig("imgout/{}.png".format(interval, period), format="png")
+    #plt.close()
+    fig.tight_layout()
+    plt.show()
+
+        # processed_extension = make_interval_periodic_intersection(I, p*p_increment, get_max_interval_endpoint(I))
+        # #print(processed_extension)
+        # for k in processed_extension:
+        #     pass
+            #plt.axhline(y = p*p_increment, xmin=
+            # dat = P.to_data(k)
+            # for interval in dat:
+            #     yval = p*p_increment
+            #     xminval = round(interval[1],2)
+            #     xmaxval = round(interval[2],2)
+            #     if xminval == xmaxval:
+            #         #We're going to be plotting points so scatter!
+            #         scatterx1.append(xminval)
+            #         scattery1.append(yval)
+            #     else:
+            #         ax1.hlines(y = yval, xmin = xminval, xmax = xmaxval)
+            #     #ax1.scatter(scatterx, scattery, marker=',')#, s=(72/fig.dpi)**2)
+        # for k in make_periodic_extension_of_interval(processed_extension, p*p_increment, interval_max):
+        #     pass
+            # dat = P.to_data(k)
+            # for interval in dat:
+            #     yval = p*p_increment
+            #     xminval = round(interval[1],2)
+            #     xmaxval = round(interval[2],2)
+            #     if xminval == xmaxval:
+            #         scatterx2.append(xminval)
+            #         scattery2.append(yval)
+            #     else:
+            #         ax2.hlines(y = yval, xmin = xminval, xmax = xmaxval)
+    #plt.axhline(y = .9, xmin = 0, xmax = 10)
+    # if display_noise == True:
+    #     ax1.scatter(scatterx1, scattery1, marker=',', s=(72/fig.dpi)**2)
+    #     ax2.scatter(scatterx2, scattery2, marker=',', s=(72/fig.dpi)**2)
+    # plt.show()
+
+    return 0
 
 def unit_test_make_matrix_periodic():
-    file = './outputs/moongnd-8/moongnd_0 Contact Analysis.csv'
+    file = './outputs/experiments/knn-starlink-1-moon-2-mars-2/starlink_mars_2023-10_0 Contact Analysis.csv'
     A = imac.soapConverter(file)
 
 
@@ -321,6 +490,7 @@ def unit_test_make_matrix_periodic():
     plt.xlabel("Induced Period")
     plt.ylabel("Distance from Original Matrix")
     plt.show()
+
 
 def old_comments():
     #print(A[0][1])
@@ -370,8 +540,8 @@ def random_one_dimensional_data_cloud(number_of_points, maxval, sigdigs=0):
     return ret
 
 if __name__ == "__main__":
-    N = [[P.open(-P.inf,P.inf),P.open(.8,2)|P.open(13.5,14.5),P.open(0,1)|P.open(2,4)], [P.open(.8,2)|P.open(10,12),P.open(-P.inf,P.inf),P.open(0,1)|P.open(3,4)], [P.open(0,1)|P.open(2,4),P.open(0,1)|P.open(3,4),P.open(-P.inf,P.inf)]]
-    A = N
+    # N = [[P.open(-P.inf,P.inf),P.open(.8,2)|P.open(13.5,14.5),P.open(0,1)|P.open(2,4)], [P.open(.8,2)|P.open(10,12),P.open(-P.inf,P.inf),P.open(0,1)|P.open(3,4)], [P.open(0,1)|P.open(2,4),P.open(0,1)|P.open(3,4),P.open(-P.inf,P.inf)]]
+    # A = N
 
     #unit_test_window()
 
@@ -392,12 +562,12 @@ if __name__ == "__main__":
     #graph_periodic_intersection_over_various_periods(I, 1, 20, 20, .05)
 
 
-    I = random_one_dimensional_data_cloud(50, 10, 2)
-    J = open_cover(I, .01)
+    # I = random_one_dimensional_data_cloud(50, 10, 2)
+    # J = open_cover(I, .01)
 
-    for i in range(1, 10):
-        J = open_cover(J, .01)
-        graph_periodic_intersection_over_various_periods(J, .1, 10, 10, .05, display_noise = True)
+    # for i in range(1, 3):
+    #     J = open_cover(J, .01)
+    #     graph_periodic_intersection_over_various_periods(J, .1, 10, 10, .05, display_noise = True)
 
 
     
@@ -422,13 +592,41 @@ if __name__ == "__main__":
 
     #This produces a nice graph from an actual contact interval
 
-    #file = './outputs/moongnd-8/moongnd_0 Contact Analysis.csv'
-    #A = imac.soapConverter(file)
-    #print(A[3][5])
-    #graph_periodic_intersection_over_various_periods(A[3][5], 1, 86400, 86400, 10)
+    file = './outputs/experiments/knn-starlink-1-moon-2-mars-2/starlink_mars_2023-10_0 Contact Analysis.csv'
+    file = './outputs/experiments/lt-starlink-15-sat-single/starlink_2023_12_1 Contact Analysis.csv'
+    file = './outputs/experiments/knn-starlink-2-moon-2-mars-2/starlink_moon_2023-12_0 Contact Analysis.csv'
+    A = imac.soapConverter(file)
+    # exit()
+    print(A)
+    print(f"{len(A)}")
+    interval = A[0][3]
+    # interval = A[2][4]
+    print(interval)
+    graph_periodic_intersection_over_various_periods_updated(interval, 1, 86400, 86400, 10)
 
 
 
+def unit_test_make_interval_periodic():
+    various_intervals = []
+    various_intervals.append(P.open(0, 25) | P.open(50, 75))
+    for k in range(1,10):
+        various_intervals.append(P.open(0, 25) | P.open(50+k*20, 75+k*20))
 
+    for interval in various_intervals:
+        periods = []
+        distances = []
+        max_endpoint = get_max_interval_endpoint(interval)
+        for period in range(10, max_endpoint, 1):
+            periods.append(period)
+            periodic_interval = make_interval_periodic_union(interval, period)
+            periodic_expansion = make_periodic_extension_of_interval(periodic_interval, period, max_endpoint)
+            distances.append(idf.xor_distance(interval,periodic_expansion))
+        plt.bar(periods,distances)
+        plt.title("L_1 Distance on the interval {}".format(interval))
+        plt.xlabel("Induced Period")
+        plt.ylabel("Distance from Original Interval")
+        #plt.savefig("imgout/{}.png".format(interval, period), format="png")
+        #plt.close()
+        plt.show()
 
 
